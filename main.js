@@ -15,43 +15,47 @@
 
 // todo
 
-// ! revisit and test music with intros.
-// More button Graphics
-// Assigned sound effects.
-// Item Image.
-// Add next and previous buttons to achevements.
-// Mouse flash on menu
+// Rotatable Bars.
+// Touch screen controls.
+// Title Screen.
+
 
 class Example extends Phaser.Scene {
     constructor() {
         super();
 
         // Game Settings
+        this.gmaeTitle = 'My Game'
         this.uniqueGameID = 'jwbenfjbwekjfb';
         this.backgroundColor = 0x006600;
         this.score = 0;
         this.cash = 100;
 
         this.origins = {
-            tLeft: [0,0],
-            mLeft: [0,.5],
-            bLeft: [0,1],
-            tCenter: [0.5,0],
-            mCenter: [0.5,.5],
-            bCenter: [0.5,1],
-            tRight: [1,0],
-            mRight: [1,.5],
-            bRight: [1,1],
+            tLeft: [0, 0],
+            cLeft: [0, .5],
+            bLeft: [0, 1],
+            tCenter: [0.5, 0],
+            cCenter: [0.5, .5],
+            bCenter: [0.5, 1],
+            tRight: [1, 0],
+            cRight: [1, .5],
+            bRight: [1, 1],
         };
 
         this.images = [
             ['smile', 'https://play.rosebud.ai/assets/smile.png?xqLm'],
             ['overlay', 'https://play.rosebud.ai/assets/View.png?AK9S'],
+            ['icon', 'https://play.rosebud.ai/assets/icon.png?7TRa']
         ];
 
         this.audios = [
-            ['music1', 'https://play.rosebud.ai/assets/2024 Food Jam 1.mp3?ubad'],
-            ['music2', 'https://play.rosebud.ai/assets/2024 Food Jam 2.mp3?nPxe'],
+            [.1, 'music1', 'https://play.rosebud.ai/assets/2024 Food Jam 1.mp3?ubad'],
+            [1, 'music2', 'https://play.rosebud.ai/assets/2024 Food Jam 2.mp3?nPxe'],
+            [1, 'intro', 'https://play.rosebud.ai/assets/intro.mp3?wKcl'],
+            [.5, 'thunk', 'https://play.rosebud.ai/assets/thunk.mp3?iXL2'],
+            [1, 'pop', 'https://play.rosebud.ai/assets/pop.mp3?FKDU'],
+            [1, 'voice', 'https://play.rosebud.ai/assets/voice.mp3?PwgX']
         ];
 
         this.scripts = [
@@ -62,7 +66,7 @@ class Example extends Phaser.Scene {
             base: {
                 fontFamily: 'Arial',
                 fontSize: 24,
-		        color: '#ffffff',
+                color: '#ffffff',
                 depth: 1,
                 origin: 'tLeft',
                 align: 'left',
@@ -71,12 +75,15 @@ class Example extends Phaser.Scene {
                 backgroundColor: '#000000',
                 align: 'center',
                 padding: {
-                    x: 10,
-                    y: 5
+                    x: 8,
+                    y: 3
                 },
                 depth: 100,
-                origin: 'mCenter',
+                origin: 'cCenter',
                 activeGroup: 'Main',
+                flash: '#555555',
+                upSound: 'pop',
+                border1: '1 #ffffff',
             },
             overlayButton: {
                 depth: 1001,
@@ -107,37 +114,40 @@ class Example extends Phaser.Scene {
                 depth: 2001,
                 backgroundColor: '#222222',
                 fill: '#ffffff',
-                origin: 'mCenter',
+                origin: 'cCenter',
                 activeGroup: 'Overlay',
                 border1: '1 #ffffff',
+                upSound: 'thunk'
             },
             shopButtonBought: {
                 depth: 2001,
                 backgroundColor: '#000000',
                 fill: '#333333',
-                origin: 'mCenter',
+                origin: 'cCenter',
                 activeGroup: 'Overlay',
                 border1: '1 #ffffff',
+                upSound: 'thunk'
             },
             shopButtonPoor: {
                 depth: 2001,
                 backgroundColor: '#990000',
                 fill: '#ffffff',
-                origin: 'mCenter',
+                origin: 'cCenter',
                 activeGroup: 'Overlay',
                 border1: '1 #ffffff',
+                upSound: 'thunk'
             },
             shopButtonBuy: {
                 depth: 2001,
                 backgroundColor: '#007700',
-                origin: 'mCenter',
+                origin: 'cCenter',
                 activeGroup: 'Overlay',
                 border1: '1 #ffffff',
             },
 
             overlayText: {
                 depth: 1001,
-                origin: 'mLeft'
+                origin: 'cLeft'
             },
             overlayDialog: {
                 depth: 1001,
@@ -146,42 +156,53 @@ class Example extends Phaser.Scene {
             },
             overlayTextCentered: {
                 depth: 1001,
-                origin: 'mCenter'
+                origin: 'cCenter'
             },
             overlayLocked: {
                 depth: 1001,
-                origin: 'mLeft',
+                origin: 'cLeft',
                 fill: '#777777'
             },
             overlayBought: {
                 depth: 1001,
-                origin: 'mLeft',
+                origin: 'cLeft',
                 fill: '#009900'
             },
             overlayPoor: {
                 depth: 1001,
-                origin: 'mLeft',
+                origin: 'cLeft',
                 fill: '#990000'
             },
             messages: {
                 fill: '#000000',
-                backgroundColor: '#aaaaaa',
+                backgroundColor: '#ffffff',
+                fontFamily: 'Georgia',
                 align: 'center',
                 origin: 'tRight',
                 depth: 2000,
                 padding: {
-                    x: 20,
-                    y: 20
+                    x: 10,
+                    y: 10
                 }
             },
             floatingText: {
                 fill: '#ffffff',
                 stroke: '#000000',
                 strokeThickness: 3,
-                origin: 'mCenter',
-                depth: 999
+                origin: 'cCenter',
+                depth: 999,
+                fontSize: 20,
             },
-            gameOverTitle:{
+            titleScreenTitle: {
+                fontSize: '64px',
+                fontStyle: 'bold',
+                fill: '#22ff00',
+                stroke: '#000000',
+                strokeThickness: 6,
+                origin: 'tCenter',
+                depth: 1001
+            },
+            gameOverTitle: {
                 fontSize: '64px',
                 fontStyle: 'bold',
                 fill: '#ff8800',
@@ -190,7 +211,7 @@ class Example extends Phaser.Scene {
                 origin: 'tCenter',
                 depth: 1001
             },
-            gameOverSubTitle:{
+            gameOverSubTitle: {
                 fontSize: '28px',
                 fontStyle: 'bold',
                 fill: '#ff8800',
@@ -200,7 +221,7 @@ class Example extends Phaser.Scene {
                 depth: 1001
             },
 
-            gameWonTitle:{
+            gameWonTitle: {
                 fontSize: '64px',
                 fontStyle: 'bold',
                 fill: '#ffffed',
@@ -209,7 +230,7 @@ class Example extends Phaser.Scene {
                 origin: 'tCenter',
                 depth: 1001
             },
-            gameWonSubTitle:{
+            gameWonSubTitle: {
                 fontSize: '28px',
                 fontStyle: 'bold',
                 fill: '#ffffed',
@@ -225,48 +246,46 @@ class Example extends Phaser.Scene {
             },
             overlayTitle: {
                 align: 'center',
-                origin: 'mCenter',
+                origin: 'cCenter',
                 depth: 1001,
                 fontSize: '36px',
                 fontStyle: 'bold',
             },
             overlaySubTitle: {
                 align: 'center',
-                origin: 'mCenter',
+                origin: 'cCenter',
                 depth: 1001,
                 fontSize: '32px',
                 fontStyle: 'bold',
             },
             overlaySubSubTitle: {
                 align: 'center',
-                origin: 'mCenter',
+                origin: 'cCenter',
                 depth: 1001,
                 fontSize: '24px',
                 fontStyle: 'bold',
             },
             achievementsGreenLeft: {
-                fontSize: '20px',
                 fill: '#00ff00',
                 depth: 1001,
+                origin: 'cLeft',
             },
             achievementsRedLeft: {
-                fontSize: '20px',
                 fill: '#ff0000',
                 depth: 1001,
+                origin: 'cLeft',
             },
             achievementsGreenRight: {
-                fontSize: '20px',
                 fill: '#00ff00',
                 depth: 1001,
-                origin: 'tTight',
-                align: 'right'
+                origin: 'cRight',
+                align: 'cRight'
             },
             achievementsRedRight: {
-                fontSize: '20px',
                 fill: '#ff0000',
                 depth: 1001,
-                origin: 'tTight',
-                align: 'right'
+                origin: 'cRight',
+                align: 'cRight'
             }
 
         };
@@ -305,12 +324,14 @@ class Example extends Phaser.Scene {
                 price: 50,
                 text: 'Buy 5 health',
                 page: 1,
-                requires:  ()=>{
-                    return ('player' in this.health) && 
-                            (this.health.player.value < this.health.player.max)
+                requires: () => {
+                    return ('player' in this.barList) &&
+                        (this.barList.player.value < this.barList.player.max)
                 },
-                update: ()=>{this.health.player.value += 10;}
-                    
+                update: () => {
+                    this.barList.player.value += 10;
+                }
+
             },
 
             'scoreSet': {
@@ -360,6 +381,7 @@ class Example extends Phaser.Scene {
                 price: 150,
                 text: 'Bowl',
                 page: 2,
+                icon: 'icon'
             },
             'Eggs': {
                 type: 'repeatItem',
@@ -401,36 +423,39 @@ class Example extends Phaser.Scene {
             player: {
                 image: null,
                 hit: [
-                    10|10|10|10
+                    10 | 10 | 10 | 10
                 ]
             }
         }
 
         // Text Fields in the upper left corner.
         this.leftSideText = [
-            'Score: ~score~            timelineDeadline: ~timelineDeadline~',
+            'Score: ~score~            timelineDeadline: ~timelineDeadline~            Volume: ~displayVolume~',
             'Step: ~stepCount~            timelinePaused: ~timelinePaused~',
             'Cash: $~cash~            timelineInd: ~timelineInd~',
             'Message Que: ~messageList.length~         timelineTime: ~timelineTime~',
         ];
 
-        this.achievements = [
-            {
-                name:   '0 Health',
-                desc:  'Have a health bar reach zero',
-                have:   false,
-                check:   ()=>{return ('player' in this.health) && this.health.player.value == 0;}
+        this.achievements = [{
+            name: '0 Health',
+            desc: 'Have a health bar reach zero',
+            have: false,
+            check: () => {
+                return ('player' in this.barList) && this.barList.player.value == 0;
             },
-            {
-                name:   '1k Steps',
-                desc:  'Get past step 1000',
-                have:   false,
-                check:   ()=>{return this.stepCount > 1000; }
-            }
-        ]
-        
+            icon: 'icon'
+        }, {
+            name: '1k Steps',
+            desc: 'Get past step 1000',
+            have: false,
+            check: () => {
+                return this.stepCount > 1000;
+            },
+            icon: 'icon'
+        }]
 
-// ========================== Not manual settings ======================
+
+        // ========================== Not manual settings ======================
 
         // Game State Values
         this.resourcesLoaded = false;
@@ -452,6 +477,8 @@ class Example extends Phaser.Scene {
         this.timelineDeadline = -1;
 
         // Game Assets
+        this.currentVolume = 1;
+        this.displayVolume = 100;
         this.activeGroup = 'Main';
         this.loadingDiv = null; // Add this line to store the div reference
         this.completed = [];
@@ -464,7 +491,7 @@ class Example extends Phaser.Scene {
         this.fullPageDialog = null;
         this.floatingNumbers = [];
         this.selfFillText = [];
-        this.health = {};
+        this.barList = {};
         this.backdrop = null;
         this.background = null;
         this.leftSideTextField = null;
@@ -473,8 +500,9 @@ class Example extends Phaser.Scene {
         this.musicArr = {};
         this.soundArr = {};
         this.currentMusic = null;
+        this.currentVocals = null;
         this.skipButton = null;
-        this.messageText = null; 
+        this.messageText = null;
         this.messageList = [];
         this.achievementsFields = [];
         this.achievementsGFields = [];
@@ -482,34 +510,49 @@ class Example extends Phaser.Scene {
         this.titleFields = null;
         this.backButton = null;
         this.shopPageNum = 1;
-        this.shopPageNumField = null;
+        this.achievementPageNum = 1;
+        this.maxAchievementPage = 0;
+        this.pageNumberField = null;
         this.shopTextFields = [];
         this.shopBuyButtons = []
         this.prevButton = null;
         this.nextButton = null;
-        this.pageNumberField = null;
+        this.iconList = [];
+
         this.shopMaxPage = null;
-
-
 
         this.inventoryCount = 0;
         this.inventoryPage = 1;
         this.maxInventoryPage = 1;
         this.borderList = [];
-
-
     }
 
     preload() {
 
-        for(let i = 0; i < 100; i++ ){
+        for (let i = 0; i < 100; i++) {
 
-            this.shopItems['test'+i] = {
+            this.shopItems['test' + i] = {
                 type: 'repeatItem',
                 price: 1,
-                text: 'test item '+i,
-                page: 3+Math.floor(i/12),
-                bought: 2
+                text: 'test item ' + i,
+                page: 3 + Math.floor(i / 12),
+                bought: 2,
+                icon: 'icon'
+            };
+            this.shopItems['testC' + i] = {
+                type: 'repeatItem',
+                price: 1,
+                text: 'test item ' + i,
+                page: 3 + Math.floor(i / 12),
+                bought: 2,
+                icon: 'icon'
+            };
+            this.shopItems['testB' + i] = {
+                type: 'repeatItem',
+                price: 1,
+                text: 'test item ' + i,
+                page: 3 + Math.floor(i / 12),
+                bought: 2,
             };
         }
 
@@ -531,7 +574,7 @@ class Example extends Phaser.Scene {
             this.load.image(this.images[i][0], this.images[i][1]);
         }
         for (let i = 0; i < this.audios.length; i++) {
-            this.load.audio(this.audios[i][0], this.audios[i][1]);
+            this.load.audio(this.audios[i][1], this.audios[i][2]);
         }
         for (let i = 0; i < this.scripts.length; i++) {
             this.load.script(this.scripts[i][0], this.scripts[i][1]);
@@ -582,6 +625,11 @@ class Example extends Phaser.Scene {
         this.background = this.add.rectangle(400, 300, 800, 600, this.backgroundColor);
         this.background.depth = 0;
 
+        // Volumn bar
+        this.volumeControl = this.createValueBar('volume', 460, 35, 300, 20, 10, 0xcccccc, 0x333333);
+        this.enableInteractiveBar('volume');
+        this.updateValueBar('volume', 1, 1)
+
         this.createButton(100, 150, 'Restart Timeline');
         this.createButton(100, 200, 'Game Over');
         this.createButton(100, 250, 'Show Scores');
@@ -596,7 +644,7 @@ class Example extends Phaser.Scene {
         this.createButton(280, 200, 'Stop Music');
         this.createButton(280, 250, 'Play Sound 2');
         this.createButton(280, 300, 'Stop Sound');
-        this.createButton(280, 350, 'Play Music 2');
+        this.createButton(280, 350, 'Play Music Intro');
         this.createButton(280, 400, 'Create Bar');
         this.createButton(280, 450, 'Damage');
         this.createButton(280, 500, 'Heal');
@@ -608,29 +656,23 @@ class Example extends Phaser.Scene {
         this.createButton(480, 300, 'Add Cash');
         this.createButton(480, 350, 'Show Message');
         this.createButton(480, 400, 'Open Inventory');
-
-
-        this.input.on('pointerdown',  (pointer) => {
-            if (!this.resourcesLoaded || !this.created || this.gameEnded || this.paused) {
-                return;
-            }
-            const randomNumber = Phaser.Math.Between(1, 99);
-            this.addFloatingNumber(pointer.x, pointer.y, randomNumber.toString());
-        }, this);
+        this.createButton(480, 450, 'Floating Nums');
+        this.createButton(480, 500, 'Play Vocal');
+        this.createButton(480, 550, 'Stop Vocal');
 
         this.created = true;
     }
 
-    doFunction(name, params, activeGroup='') {
+    doFunction(name, params, activeGroup = '') {
         if (!this.resourcesLoaded || !this.created || this.gameEnded || this.paused) {
             return;
         }
-        if(activeGroup !== '' && activeGroup != this.activeGroup){
+        if (activeGroup !== '' && activeGroup != this.activeGroup) {
             return;
         }
-        console.log('doFunction : '+name+' Group:'+activeGroup);
+        console.log('doFunction : ' + name + ' Group:' + activeGroup);
 
-        name = name.replace('_',' ');
+        name = name.replace('_', ' ');
         switch (name) {
             case 'Restart Timeline':
                 this.timelineRestart();
@@ -649,7 +691,7 @@ class Example extends Phaser.Scene {
                 break;
             case 'Reset Scores':
                 this.resetHighScores();
-            break;
+                break;
             case 'Save Scores':
                 this.saveHighScore();
                 break;
@@ -667,133 +709,219 @@ class Example extends Phaser.Scene {
                 break;
             case 'closeDialog':
                 this.closeDialog();
-            break;
+                break;
             case 'Play Music 1':
                 this.playMusic('music1');
                 break;
-            case 'Play Music 2':
-                this.playMusic('music2');
+            case 'Play Music Intro':
+                this.playMusicWithIntro('intro', 'music2');
                 break;
             case 'Stop Music':
                 this.pauseMusic();
                 break;
             case 'Play Sound 2':
-                this.playSound('music2');
+                this.playSound('thunk');
                 break;
             case 'Stop Sound':
                 this.stopSounds();
                 break;
+            case 'Play Vocal':
+                this.playVocal('voice');
+                break;
+            case 'Stop Vocal':
+                this.pauseVocal();
+                break;
             case 'Create Bar':
-                this.createHealthBar('player', 500, 10, 100, 10, 2000, 0x00ff00, 0xff0000);
-            break;
+                this.createValueBar('player', 500, 10, 100, 10, 2000, 0x00ff00, 0xff0000);
+                break;
             case 'Damage':
-                this.health.player.value -= 10;
-            break;
+                this.barList.player.value -= 10;
+                break;
             case 'Heal':
-                this.health.player.value += 10;
-            break;
+                this.barList.player.value += 10;
+                break;
             case 'Destroy Bar':
-                this.destroyHealthBar('player');
-            break;
+                this.destroyValueBar('player');
+                break;
             case 'addFullPageDialog1':
                 this.addFullPageDialog("On the other score=~score~ hand, we denounce with righteous indignation and dislike men who are so beguiled and demoralized by the charms of pleasure of the moment, so blinded by desire, that they cannot foresee the pain and trouble that are bound to ensue; and equal blame belongs to those who fail in their duty through weakness of will, which is the same as saying through shrinking from toil and pain. These cases are perfectly simple and easy to distinguish. In a free hour, when our power of choice is untrammelled and when nothing prevents our being able to do what we like best, every pleasure is to be welcomed and every pain avoided. But in certain circumstances and owing to the claims of duty or the obligations of business it will frequently occur that pleasures have to be repudiated and annoyances accepted.");
-            break;
+                break;
             case 'Skip':
                 this.timelineAdvance();
-            break;
+                break;
             case 'show Message':
                 this.showMessage(params[0]);
-            break;
-            case 'Back.Achievements':
-                this.hideAchievements();
-            break;
+                break;
+            case 'Close.Achievements':
+                this.closeAchievements();
+                break;
             case 'Show Achievements':
                 this.showAchievements();
-            break;
+                break;
             case 'Reset Achievements':
                 this.resetAchievements();
-            break;
+                break;
             case 'Open Shop':
                 this.openShop();
-            break;
+                break;
             case 'Close.Shop':
                 this.closeShop();
-            break;
+                break;
             case 'Prev.Shop':
                 this.prevShopPage();
-            break;
+                break;
             case 'Next.Shop':
                 this.nextShopPage();
-            break;
+                break;
+            case 'Prev.Achievement':
+                this.prevAchievementPage();
+                break;
+            case 'Next.Achievement':
+                this.nextAchievementPage();
+                break;
             case 'buy.shop':
                 this.shopBuy(params[0]);
-            break;
+                break;
             case 'Add Cash':
-                this.cash+=100;
-            break;
+                this.cash += 100;
+                break;
             case 'Show Message':
                 this.showMessage('This is a message');
-            break;
+                break;
             case 'Open Inventory':
                 this.openInventory();
-            break;
+                break;
             case 'Close.Inventory':
                 this.closeInventory();
-            break;
+                break;
             case 'Prev.Inventory':
                 this.prevInventoryPage();
-            break;
+                break;
             case 'Next.Inventory':
                 this.nextInventoryPage();
-            break;
+                break;
+            case 'Floating Nums':
+                for (let i = 0; i < 10; i++) {
+                    const randomNumber = Phaser.Math.Between(1, 99);
+                    const randomx = Phaser.Math.Between(200, 600);
+                    const randomy = Phaser.Math.Between(200, 400);
+                    this.addFloatingNumber(randomx, randomy, randomNumber.toString());
+                }
+                break;
 
         }
     }
 
-    pauseMusic(){
-        
+    updateSoundVolume(level = null, tar = null) {
+        if (level > 1) {
+            level = 1;
+        } else if (level < 0) {
+            level = 0;
+        }
+
+        if (level != this.currentVolume || level === null) {
+            if (level === null) {
+                level = this.currentVolume;
+            } else {
+                this.currentVolume = level;
+            }
+
+            this.displayVolume = Math.round(this.currentVolume*100);
+
+            for (let i = 0; i < this.audios.length; i++) {
+                if (tar === null || tar == this.audios[i][1]) {
+                    let def = this.audios[i];
+                    let mod = def[0];
+                    let name = def[1];
+                    let nameB = name + '~B';
+                    let nameC = name + '~C';
+
+                    Object.entries(this.musicArr).forEach(([key, entry]) => {
+                        if (key == name) {
+                            entry.setVolume(level * mod);
+                        }
+                    });
+
+                    Object.entries(this.soundArr).forEach(([key, entry]) => {
+                        if (key == name || key == nameB || key == nameC) {
+                            entry.setVolume(level * mod);
+                        }
+                    });
+                }
+            }
+        }
     }
 
-    playMusicWithIntro(intro, tar) {
-        this.pauseMusic();
-        if (!(tar in this.musicArr)) {
-            this.musicArr[tar] = this.sound.add(tar);
-            this.musicArr[tar].setLoop(true);
+    playMusicWithIntro(intro, main = null, restart = false) {
+        if (main !== null && !(main in this.musicArr)) {
+            this.musicArr[main] = this.sound.add(main);
+            this.musicArr[main].setLoop(true);
+            this.updateSoundVolume(null, main);
         }
 
         if (!(intro in this.musicArr)) {
             this.musicArr[intro] = this.sound.add(intro);
+            this.musicArr[intro].setLoop(false);
+            this.updateSoundVolume(null, intro);
+            if (main !== null) {
+                this.musicArr[intro].once('complete', () => {
+                    this.playMusic(main, true);
+                });
+            }
+        }
+
+        if (this.currentMusic && this.currentMusic != intro) {
+            if (this.currentMusic == main) {
+                if (restart) {
+                    if (this.musicArr[this.currentMusic].isPlaying) {
+                        this.musicArr[this.currentMusic].pause();
+                    }
+                } else {
+                    return;
+                }
+            } else {
+                if (this.musicArr[this.currentMusic].isPlaying) {
+                    this.musicArr[this.currentMusic].pause();
+                }
+            }
+        }
+        this.currentMusic = intro;
+
+        if (!this.musicArr[intro].isPlaying) {
+            if (restart == false && this.musicArr[intro].seek != 0) {
+                this.musicArr[intro].resume();
+            } else {
+                this.musicArr[intro].stop();
+                this.musicArr[intro].play();
+            }
+        } else if (restart) {
+            this.musicArr[intro].stop();
             this.musicArr[intro].play();
-            this.currentMusic = intro;
-
-            this.musicArr[intro].once('complete', () => {
-                this.currentMusic = this.musicArr[tar];
-                this.musicArr[tar].setLoop(true);
-                this.musicArr[tar].play();
-            });
-
-        } else if (!this.musicArr[tar].isPlaying) {
-            this.musicArr[tar].resume();
-            this.currentMusic = tar;
-        } else {
-            this.currentMusic = tar;
-            this.musicArr[tar].stop();
-            this.musicArr[tar].play();
         }
     }
 
-    playMusic(tar) {
-        this.pauseMusic();
+    playMusic(tar, restart = false) {
         if (!(tar in this.musicArr)) {
             this.musicArr[tar] = this.sound.add(tar);
+            this.updateSoundVolume(null, tar);
             this.musicArr[tar].setLoop(true);
-            this.musicArr[tar].play();
-            this.currentMusic = tar;
-        } else if (!this.musicArr[tar].isPlaying) {
-            this.musicArr[tar].resume();
-            this.currentMusic = tar;
-        } else {
-            this.currentMusic = tar;
+        }
+
+        if (this.currentMusic && this.currentMusic != tar) {
+            if (this.musicArr[this.currentMusic].isPlaying) {
+                this.musicArr[this.currentMusic].pause();
+            }
+        }
+        this.currentMusic = tar;
+
+        if (!this.musicArr[tar].isPlaying) {
+            if (restart == false && this.musicArr[tar].seek != 0) {
+                this.musicArr[tar].resume();
+            } else {
+                this.musicArr[tar].stop();
+                this.musicArr[tar].play();
+            }
+        } else if (restart) {
             this.musicArr[tar].stop();
             this.musicArr[tar].play();
         }
@@ -801,33 +929,90 @@ class Example extends Phaser.Scene {
 
     pauseMusic() {
         let tar = this.currentMusic;
-        if (tar !== null && tar in this.musicArr && this.musicArr[tar].isPlaying) {
-            this.musicArr[tar].pause();
+        if (tar !== null && tar in this.musicArr) {
+            if (this.musicArr[tar].isPlaying) {
+                this.musicArr[tar].pause();
+            } else {
+                this.musicArr[tar].stop();
+            }
+        }
+    }
+
+
+
+    playVocal(tar, restart = false) {
+        if (!(tar in this.musicArr)) {
+            this.musicArr[tar] = this.sound.add(tar);
+            this.updateSoundVolume(null, tar);
+            this.musicArr[tar].setLoop(false);
+        }
+
+        if (this.currentVocals && this.currentVocals != tar) {
+            if (this.musicArr[this.currentVocals].isPlaying) {
+                this.musicArr[this.currentVocals].pause();
+            }
+        }
+        this.currentVocals = tar;
+
+        if (!this.musicArr[tar].isPlaying) {
+            if (restart == false && this.musicArr[tar].seek != 0) {
+                this.musicArr[tar].resume();
+            } else {
+                this.musicArr[tar].stop();
+                this.musicArr[tar].play();
+            }
+        } else if (restart) {
+            this.musicArr[tar].stop();
+            this.musicArr[tar].play();
+        }
+    }
+
+    pauseVocal() {
+        let tar = this.currentVocals;
+        if (tar !== null && tar in this.musicArr) {
+            if (this.musicArr[tar].isPlaying) {
+                this.musicArr[tar].pause();
+            } else {
+                this.musicArr[tar].stop();
+            }
         }
     }
 
     playSound(tar) {
         let sound1 = tar;
         let sound2 = tar + '~B';
+        let sound3 = tar + '~C';
         if (!(sound1 in this.soundArr)) {
             // Initiate sound
             this.soundArr[sound1] = this.sound.add(tar);
             this.soundArr[sound2] = this.sound.add(tar);
-            this.soundArr[sound1].play();
-        } else {
-            if (this.soundArr[sound1].isPlaying) {
-                if (this.soundArr[sound2].isPlaying) {
-                    this.soundArr[sound1].stop();
-                    this.soundArr[sound1].play();
+            this.soundArr[sound3] = this.sound.add(tar);
+            this.updateSoundVolume(null, tar);
+        }
+        if (this.soundArr[sound1].isPlaying) {
+            if (this.soundArr[sound2].isPlaying) {
+                if (this.soundArr[sound3].isPlaying) {
+                    if (this.soundArr[sound1].seek > this.soundArr[sound2].seek) {
+                        this.soundArr[sound1].stop();
+                        this.soundArr[sound1].play();
+                    } else if (this.soundArr[sound2].seek > this.soundArr[sound3].seek) {
+                        this.soundArr[sound2].stop();
+                        this.soundArr[sound2].play();
+                    } else {
+                        this.soundArr[sound3].stop();
+                        this.soundArr[sound3].play();
+                    }
                 } else {
-                    this.soundArr[sound2].play();
+                    this.soundArr[sound3].play();
                 }
             } else {
-                this.soundArr[sound1].play();
+                this.soundArr[sound2].play();
             }
+        } else {
+            this.soundArr[sound1].play();
         }
-
     }
+
     stopSounds() {
         Object.values(this.soundArr).forEach(sound => {
             if (sound.isPlaying) {
@@ -864,78 +1049,147 @@ class Example extends Phaser.Scene {
         this.pauseBackground.on('pointerdown', this.unPauseGame, this);
         this.pauseBackground.setDepth(10000);
 
-        this.pauseButton = this.createButton(400, 250, 'Paused\n\nClick Anywhere to Resume', 'unPause');
 
-        this.pauseButton.alpha = 0;
-        this.pauseButton.on('pointerdown', this.unPauseGame, this);
 
         //Message
         this.messageText = this.createText(780, 20, '', 'messages');
         this.messageText.fadeMeToGone = 0;
-        this.messageText.alpha = 0; 
+        this.messageText.alpha = 0;
     }
 
     unPauseGame() {
         this.paused = false;
         this.pauseBackground.alpha = 0;
-        this.pauseButton.alpha = 0;
+        this.pauseButton.destroy();
+        this.pauseButton = null;
     }
 
     pauseGame() {
         this.paused = true;
         this.pauseBackground.alpha = 0.8;
-        this.pauseButton.alpha = 1;
+        this.pauseButton = this.createButton(400, 250, 'Paused\n\nClick Anywhere to Resume', 'unPause');
+        this.pauseButton.on('pointerdown', this.unPauseGame, this);
     }
 
-    createHealthBar(name, x, y, long, thick, depth, barColor, backgroundColor = 0x000000) {
-        if(name in this.health){
+    createValueBar(name, x, y, long, thick, depth, barColor, backgroundColor = 0x000000) {
+        if (name in this.barList) {
             return;
         }
 
-        let healthBarBackground = this.add.rectangle(x, y, long, thick, backgroundColor);
-        healthBarBackground.setOrigin(0, 0);
-        healthBarBackground.setDepth(depth);
+        let valueBarBackground = this.add.rectangle(x, y, long, thick, backgroundColor);
+        valueBarBackground.setOrigin(0, 0);
+        valueBarBackground.setDepth(depth);
 
-        let healthBar = this.add.rectangle(x, y, long, thick, barColor);
-        healthBar.setOrigin(0, 0);
-        healthBar.setDepth(depth + 1);
+        let valueBar = this.add.rectangle(x, y, long, thick, barColor);
+        valueBar.setOrigin(0, 0);
+        valueBar.setDepth(depth + 1);
 
 
-        this.health[name] = {
-            background: healthBarBackground,
-            bar: healthBar,
+        this.barList[name] = {
+            background: valueBarBackground,
+            bar: valueBar,
             value: 100,
             max: 100,
             x: x,
             y: y,
             thick: thick,
-            long: long
+            long: long,
+            interactive: false,
+            clicked: false,
         }
     }
 
-    destroyHealthBar(name){
-        this.health[name].bar.destroy();
-        this.health[name].background.destroy();
-        delete this.health[name];
+    destroyValueBar(name) {
+        this.barList[name].bar.destroy();
+        this.barList[name].background.destroy();
+        delete this.barList[name];
+    }
+
+    updateValueBar(key, value = null, max = null) {
+        if (value !== null) {
+            this.barList[key].value = value;
+        }
+
+        if (max !== null) {
+            this.barList[key].max = 1;
+        }
+
+        if (this.barList[key].clicked) {
+            let rawValue = (this.input.mousePointer.x - this.barList[key].x) /
+                this.barList[key].long;
+            this.barList[key].value = rawValue * this.barList[key].max;
+
+            if (!this.input.mousePointer.buttons) {
+                this.barList[key].clicked = false;
+            }
+        }
+
+        if (this.barList[key].value < 0) {
+            this.barList[key].value = 0;
+        } else if (this.barList[key].value > this.barList[key].max) {
+            this.barList[key].value = this.barList[key].max;
+        }
+
+        if(this.barList[key].interactive){
+            this.barList[key].bar.width = 10;
+
+            this.barList[key].bar.x = 
+                this.barList[key].background.x + 5 +
+                ((this.barList[key].long - 20) *
+                (this.barList[key].value / this.barList[key].max));
+
+        }else{
+            this.barList[key].bar.width =
+                this.barList[key].long *
+                (this.barList[key].value / this.barList[key].max)
+        }
+        
+    }
+
+    enableInteractiveBar(name) {
+
+        this.barList[name].interactive = true;
+        let bar = this.barList[name].bar;
+        let back = this.barList[name].background;
+
+        bar.setInteractive();
+        back.setInteractive();
+
+        bar.on('pointerdown', () => {
+            this.barList[name].clicked = true;
+        });
+
+        back.on('pointerdown', () => {
+            this.barList[name].clicked = true;
+        });
+    }
+
+    placeValueBar(x, y, name) {
+        this.barList[name].bar.x = x;
+        this.barList[name].bar.y = y;
+        this.barList[name].background.x = x;
+        this.barList[name].background.y = y;
+        this.barList[name].x = x;
+        this.barList[name].y = y;
     }
 
     updateTextDisplays() {
         let myText = '';
 
-        for(let i=0; i < this.leftSideText.length; i++){
+        for (let i = 0; i < this.leftSideText.length; i++) {
             myText = myText + this.unToken(this.leftSideText[i]) + '\n';
         }
 
         this.leftSideTextField.setText(myText);
 
         // Floating Numbers
-        if(this.floatingNumbers.length > 0){
+        if (this.floatingNumbers.length > 0) {
             let newList = [];
-            for(let i = 0; i <  this.floatingNumbers.length; i++){
+            for (let i = 0; i < this.floatingNumbers.length; i++) {
                 let tar = this.floatingNumbers[i];
-                if(tar.destroyStep <= this.stepCount){
+                if (tar.destroyStep <= this.stepCount) {
                     tar.destroy();
-                }else{
+                } else {
                     tar.y -= 2;
                     newList.push(tar);
                 }
@@ -944,14 +1198,14 @@ class Example extends Phaser.Scene {
         }
 
         // Text Filler
-        if(this.selfFillText.length > 0 && this.stepCount % 2 == 0){
+        if (this.selfFillText.length > 0 && this.stepCount % 2 == 0) {
             let newList = [];
-            for(let i = 0; i <  this.selfFillText.length; i++){
+            for (let i = 0; i < this.selfFillText.length; i++) {
                 let tar = this.selfFillText[i];
-                if(
+                if (
                     ('textToFill' in tar) &&
                     tar.displayList !== null &&
-                    tar.textToFill.length > 0){
+                    tar.textToFill.length > 0) {
 
                     let addMe = tar.textToFill.shift();
                     let setMe = tar.text + addMe;
@@ -964,9 +1218,9 @@ class Example extends Phaser.Scene {
 
     }
 
-    showMessage(text){
+    showMessage(text) {
         this.messageList.push(text);
-        if(this.messageList.length > 1){
+        if (this.messageList.length > 1) {
             return;
         }
 
@@ -977,8 +1231,8 @@ class Example extends Phaser.Scene {
         this.messageText.y = 20;
     }
 
-    makeTextSelfFill(myField, text=null){
-        if(text === null){
+    makeTextSelfFill(myField, text = null) {
+        if (text === null) {
             text = myField.text;
         }
         myField.textToFill = text.split('');
@@ -992,16 +1246,23 @@ class Example extends Phaser.Scene {
         if (!this.resourcesLoaded || !this.created || this.inStep || this.gameEnded || this.paused) {
             return;
         }
+        this.actualTime = Date.now();
+        //message Fade
 
-                    //message Fade
-        if(this.messageText.fadeMeToGone > 0){
+        // Check volume
+        if ('volume' in this.barList) {
+            let newVolume = this.barList['volume'].value;
+            this.updateSoundVolume(newVolume);
+        }
+
+        if (this.messageText.fadeMeToGone > 0) {
             this.messageText.fadeMeToGone--;
             this.messageText.y -= .3;
 
-            if(this.messageText.fadeMeToGone < 100){
+            if (this.messageText.fadeMeToGone < 100) {
                 this.messageText.alpha = this.messageText.fadeMeToGone / 100;
                 this.messageList.shift();
-                if(this.messageList.length > 0){
+                if (this.messageList.length > 0) {
                     let newMessage = this.messageList[0];
                     newMessage = this.linewrapString(this.unToken(newMessage), 30);
                     this.messageText.setText(newMessage);
@@ -1011,16 +1272,16 @@ class Example extends Phaser.Scene {
                 }
             }
         }
-        
+
         this.mousePointerField.x = this.input.mousePointer.x - 5;
         this.mousePointerField.y = this.input.mousePointer.y - 36;
-        if (this.stepCount % 20 > 10) {
+        if (this.actualTime % 400 > 200) {
             this.mousePointerField.setColor('#ffffff');
         } else {
             this.mousePointerField.setColor('#ff0000');
         }
 
-        if(this.pausedWMouse){
+        if (this.pausedWMouse) {
             return;
         }
 
@@ -1031,7 +1292,6 @@ class Example extends Phaser.Scene {
         }
 
         this.inStep = true;
-        this.actualTime = Date.now();
         this.stepDuration = this.actualTime - this.lastStepsTime;
         this.lastStepsTime = this.actualTime;
         this.runTime += this.stepDuration;
@@ -1041,16 +1301,8 @@ class Example extends Phaser.Scene {
         this.evalAchievements();
 
         // display all health values
-        Object.keys(this.health).forEach(key => {
-            if(this.health[key].value < 0){
-                this.health[key].value = 0;
-            }else if(this.health[key].value > this.health[key].max){
-                this.health[key].value = this.health[key].max;
-            }
-
-            this.health[key].bar.width = 
-                this.health[key].long *
-                 (this.health[key].value/this.health[key].max)
+        Object.keys(this.barList).forEach(key => {
+            this.updateValueBar(key);
         });
 
         if (!this.timelinePaused) {
@@ -1093,8 +1345,8 @@ class Example extends Phaser.Scene {
         this.inStep = false;
     }
 
-    addFloatingNumber(x,y,text,text_color='#ff0000', depth=999){
-        let myText = this.createText(x,y,text,'floatingText');
+    addFloatingNumber(x, y, text, text_color = '#ff0000', depth = 999) {
+        let myText = this.createText(x, y, text, 'floatingText');
         myText.destroyStep = this.stepCount + 30;
         this.floatingNumbers.push(myText);
     }
@@ -1145,28 +1397,28 @@ class Example extends Phaser.Scene {
         }
     }
 
-    addBorder(button, def){
+    addBorder(button, def) {
 
         let defArr = def.split(' ');
-        
+
         let size = parseInt(defArr[0]) * 2;
         let color = defArr[1];
 
-        if(color.charAt(0) == '#'){
+        if (color.charAt(0) == '#') {
             color = color.replace('#', '0x');
         }
 
         let obj = this.add.rectangle(
-            button.x, button.y, 
-            button.width+size, button.height+size, 
+            button.x, button.y,
+            button.width + size, button.height + size,
             color
         );
 
         obj.setDepth(button.depth);
 
-        button.setDepth(parseInt(button.depth)+1);
+        button.setDepth(parseInt(button.depth) + 1);
 
-        return obj; 
+        return obj;
     }
 
     createButton(x, y, text, style) {
@@ -1176,22 +1428,39 @@ class Example extends Phaser.Scene {
         visualText = this.unToken(visualText);
 
         let myStyle = null;
-        if(typeof style == 'string'){
-            if(style in this.styles){
-                myStyle = { ...this.styles.base, ...this.styles.button, ...this.styles[style] };
-            }else{
-                myStyle = { ...this.styles.base, ...this.styles.button, ...{color: style} };
+        if (typeof style == 'string') {
+            if (style in this.styles) {
+                myStyle = {
+                    ...this.styles.base,
+                    ...this.styles.button,
+                    ...this.styles[style]
+                };
+            } else {
+                myStyle = {
+                    ...this.styles.base,
+                    ...this.styles.button,
+                    ...{
+                        color: style
+                    }
+                };
             }
-        }else if(typeof style == 'object' && style){
-            myStyle = { ...this.styles.base, ...this.styles.button, ...style };
-        }else{
-            myStyle = { ...this.styles.base, ...this.styles.button};
+        } else if (typeof style == 'object' && style) {
+            myStyle = {
+                ...this.styles.base,
+                ...this.styles.button,
+                ...style
+            };
+        } else {
+            myStyle = {
+                ...this.styles.base,
+                ...this.styles.button
+            };
         }
 
         let button = this.add.text(
             x,
             y,
-            visualText, 
+            visualText,
             myStyle
         );
 
@@ -1199,14 +1468,14 @@ class Example extends Phaser.Scene {
         button.setDepth(myStyle.depth);
         button.myOriginalStyle = myStyle;
 
-        if('border2' in myStyle){
+        if ('border2' in myStyle) {
             button.myBorder2 = this.addBorder(button, myStyle.border2);
             button.on('destroy', () => {
                 button.myBorder2.destroy();
             });
         }
 
-        if('border1' in myStyle){
+        if ('border1' in myStyle) {
             button.myBorder1 = this.addBorder(button, myStyle.border1);
             button.on('destroy', () => {
                 button.myBorder1.destroy();
@@ -1214,25 +1483,34 @@ class Example extends Phaser.Scene {
         }
 
         let myGroup = '';
-        if('activeGroup' in myStyle){
+        if ('activeGroup' in myStyle) {
             myGroup = myStyle.activeGroup;
         }
 
         // Add pointer down effect
         button.on('pointerdown', () => {
-            button.setBackgroundColor('#aaaaaa');
+            if ('downSound' in button.myOriginalStyle) {
+                this.playSound(button.myOriginalStyle.downSound);
+            }
+            if ('flash' in button.myOriginalStyle) {
+                button.setBackgroundColor(button.myOriginalStyle.flash);
+            }
         });
-        
+
         // Add pointer up effect
         button.on('pointerup', () => {
+            if ('upSound' in button.myOriginalStyle) {
+                this.playSound(button.myOriginalStyle.upSound);
+            }
             button.setBackgroundColor(button.myOriginalStyle.backgroundColor);
         });
 
-         button.on('pointerout', () => {
+        button.on('pointerout', () => {
             button.setBackgroundColor(button.myOriginalStyle.backgroundColor);
         });
 
         button.setInteractive();
+
         if (textArr.length == 1) {
             button.on('pointerup', () => this.doFunction(textArr[0], [], myGroup), this);
         } else {
@@ -1247,22 +1525,35 @@ class Example extends Phaser.Scene {
         text = this.unToken(text);
 
         let myStyle = null;
-        if(typeof style == 'string'){
-            if(style in this.styles){
-                myStyle = { ...this.styles.base, ...this.styles[style] };
-            }else{
-                myStyle = { ...this.styles.base, ...{color: style} };
+        if (typeof style == 'string') {
+            if (style in this.styles) {
+                myStyle = {
+                    ...this.styles.base,
+                    ...this.styles[style]
+                };
+            } else {
+                myStyle = {
+                    ...this.styles.base,
+                    ...{
+                        color: style
+                    }
+                };
             }
-        }else if(typeof style == 'object' && style){
-            myStyle = { ...this.styles.base, ...style };
-        }else{
-            myStyle = { ...this.styles.base,};
+        } else if (typeof style == 'object' && style) {
+            myStyle = {
+                ...this.styles.base,
+                ...style
+            };
+        } else {
+            myStyle = {
+                ...this.styles.base,
+            };
         }
 
         let button = this.add.text(
             x,
             y,
-            text, 
+            text,
             myStyle
         );
 
@@ -1272,14 +1563,28 @@ class Example extends Phaser.Scene {
         return button;
     }
 
-    
+    createIcon(x, y, icon, depth) {
+        let myIcon = this.add.image(x, y, icon);
+        myIcon.setDepth(depth);
+        myIcon.setOrigin(.5, .5);
+        return myIcon;
+    }
+
+    showTitleScreen() {
+
+        this.backdrop.alpha = 0.9;
+        // Add the title
+        this.titleField = this.createText(400, 50, this.gameTitle, 'titleScreenTitle');
+
+        this.showHighScores();
+    }
 
     showGameOverScreen() {
         this.gameEnded = true;
         this.mousePointerField.alpha = 0;
         this.saveHighScore();
 
-        this.backdrop.alpha = 0.8;
+        this.backdrop.alpha = 0.9;
 
         // Add the title
         this.createText(400, 50, "Game Over", 'gameOverTitle');
@@ -1293,7 +1598,7 @@ class Example extends Phaser.Scene {
         this.mousePointerField.alpha = 0;
         this.saveHighScore();
 
-        this.backdrop.alpha = 0.8;
+        this.backdrop.alpha = 0.9;
 
         this.createText(400, 50, "You Win!", 'gameWonTitle');
         this.createText(400, 130, "Refresh to Play again", 'WonSubTitle');
@@ -1332,7 +1637,7 @@ class Example extends Phaser.Scene {
 
     hideHighScores() {
         for (let i = 0; i <= 10; i++) {
-            if(this.highScoreTextFields[i]){
+            if (this.highScoreTextFields[i]) {
                 this.highScoreTextFields[i].destroy();
                 this.highScoreTextFields[i] = null;
             }
@@ -1360,20 +1665,20 @@ class Example extends Phaser.Scene {
 
     // ========= Achievements
 
-    evalAchievements(){
+    evalAchievements() {
         let update = false;
         for (let i = 0; i < this.achievements.length; i++) {
-            if(this.achievements[i].have == false){
+            if (this.achievements[i].have == false) {
                 let result = this.achievements[i].check();
-                if(result){
+                if (result) {
                     this.achievements[i].have = true;
                     update = true;
-                    this.showMessage("Achievement Made\n"+this.achievements[i].name);
-                            
+                    this.showMessage("Achievement Made\n" + this.achievements[i].name);
+
                 }
             }
         }
-        if(update){
+        if (update) {
             this.saveAchievements();
         }
     }
@@ -1381,34 +1686,107 @@ class Example extends Phaser.Scene {
     showAchievements() {
         this.activeGroup = 'Overlay';
         this.backdrop.alpha = 1;
-        this.pausedWMouse = true; 
+        this.pausedWMouse = true;
 
         this.titleField = this.createText(400, 15, 'Achievements', 'overlayTitle');
 
-        this.backButton = this.createButton(100, 15, "Back.Achievements", 'overlayControl');
+        this.backButton = this.createButton(100, 15, "Close.Achievements", 'overlayControl');
+
+        this.maxAchievementPage = 1 + Math.floor(this.achievements.length / 20);
+
+        let maxInd = this.achievementPageNum * 15;
+        let minInd = maxInd - 15;
+        let vpos = 0;
+        let hpos = 40;
 
         for (let i = 0; i < this.achievements.length; i++) {
-            let textVal = this.achievements[i].name + ': ' + this.achievements[i].desc;
-            this.achievementsFields[i] = this.createText(40, 40 + i * 24, textVal,
-                this.achievements[i].have ? 'achievementsGreenLeft' : 'achievementsRedLeft',
-            );   
+            if (i >= minInd && i < maxInd) {
 
-            this.achievementsGFields[i] = this.createText(760, 40 + i * 24, 
-                this.achievements[i].have ? 'achievementsGreenRight' : 'achievementsRedRight',
-            );
+                if ('icon' in this.achievements[i]) {
+                    hpos = 70;
+                    this.iconList.push(
+                        this.createIcon(50, 60 + vpos * 30, this.achievements[i].icon, 1001)
+                    );
+                } else {
+                    hpos = 40;
+                }
+
+                let textVal = this.achievements[i].name + ': ' + this.achievements[i].desc;
+                this.achievementsFields[i] = this.createText(hpos, 60 + vpos * 30, textVal,
+                    this.achievements[i].have ? 'achievementsGreenLeft' : 'achievementsRedLeft',
+                );
+
+                this.achievementsGFields[i] = this.createText(760, 60 + vpos * 30,
+                    this.achievements[i].have ? 'achievementsGreenRight' : 'achievementsRedRight',
+                );
+                vpos++
+            }
+        }
+
+        if (this.achievementPageNum > 1) {
+            this.prevButton = this.createButton(200, 550, "Prev.Achievement", 'overlayControl');
+        }
+        if (this.achievementPageNum < this.maxAchievementPage) {
+            this.nextButton = this.createButton(600, 550, "Next.Achievement", 'overlayControl');
+        }
+        if (this.maxAchievementPage > 1) {
+            this.pageNumberField = this.createText(400, 550, 'Page ' + this.achievementPageNum, 'overlayTextCentered');
         }
     }
 
-    hideAchievements() {
+    prevAchievementPage() {
+        if (this.achievementPageNum != 0) {
+            this.achievementPageNum--;
+            this.clearAchievements();
+            this.showAchievements();
+        }
+    }
+
+    nextAchievementPage() {
+        if (this.achievementPageNum < this.maxAchievementPage) {
+            this.achievementPageNum++;
+            this.clearAchievements();
+            this.showAchievements();
+        }
+    }
+
+    clearAchievements() {
         for (let i = 0; i < this.achievements.length; i++) {
-            this.achievementsFields[i].destroy();
-            this.achievementsGFields[i].destroy();
+            if (this.achievementsFields[i]) {
+                this.achievementsFields[i].destroy();
+                this.achievementsGFields[i].destroy();
+            }
         }
         this.backButton.destroy();
         this.titleField.destroy();
+
+        if (this.prevButton) {
+            this.prevButton.destroy();
+            this.prevButton = null;
+        }
+        if (this.nextButton) {
+            this.nextButton.destroy();
+            this.nextButton = null;
+        }
+
+        if (this.pageNumberField) {
+            this.pageNumberField.destroy();
+            this.pageNumberField = null;
+        }
+
+        while (this.iconList.length) {
+            let myIcon = this.iconList.pop();
+            if (myIcon)
+                myIcon.destroy();
+        }
+
+    }
+
+    closeAchievements() {
+        this.activeGroup = 'Main';
+        this.clearAchievements();
         this.backdrop.alpha = 0;
         this.pausedWMouse = false;
-        this.activeGroup = 'Main';
     }
 
     loadAchievements() {
@@ -1437,165 +1815,175 @@ class Example extends Phaser.Scene {
 
     // ========================== Shop
 
-    openShop(){
+    openShop() {
         this.activeGroup = 'Overlay';
         this.backdrop.alpha = 1;
-        this.pausedWMouse = true; 
+        this.pausedWMouse = true;
 
-        this.titleField = this.createText(400, 15, 'Shop : $'+this.cash, 'overlayTitle');
+        this.titleField = this.createText(400, 15, 'Shop : $' + this.cash, 'overlayTitle');
 
-        this.backButton =  this.createButton(100, 15, "Close.Shop", 'overlayControl');
+        this.backButton = this.createButton(100, 15, "Close.Shop", 'overlayControl');
 
         let vertInd = 0
         let i = 0;
-       // for(let i=0; i < this.shopItems.length; i++ ){
+        let hPos = 100;
+        // for(let i=0; i < this.shopItems.length; i++ ){
         Object.entries(this.shopItems).forEach(([key, entry]) => {
-            if(this.shopMaxPage < entry.page){
+            if (this.shopMaxPage < entry.page) {
                 this.shopMaxPage = entry.page;
             }
             let myText = this.unToken(entry.text);
-            if(entry.type == 'uniqueItem' || entry.type == 'repeatItem'){
-                if('bought' in entry){
-                    myText = "[x"+entry.bought+"] "+myText;
-                }else{
-                    myText = "[x0] "+myText;
+            if (entry.type == 'uniqueItem' || entry.type == 'repeatItem') {
+                if ('bought' in entry) {
+                    myText = "[x" + entry.bought + "] " + myText;
+                } else {
+                    myText = "[x0] " + myText;
                 }
             }
-            if(entry.page == this.shopPageNum){
-                if(entry.type == 'title'){
+            if (entry.page == this.shopPageNum) {
+                if (entry.type == 'title') {
                     console.log('title done');
-                    this.shopTextFields[i] = this.createText(400, 60 + 38*vertInd, myText, 'OverlaySubTitle');
-                    vertInd+=2;
-                }else if(entry.type == 'subtitle'){
+                    this.shopTextFields[i] = this.createText(400, 60 + 38 * vertInd, myText, 'OverlaySubTitle');
+                    vertInd += 2;
+                } else if (entry.type == 'subtitle') {
                     console.log('subtitle done');
-                    this.shopTextFields[i] = this.createText(400, 26+38*vertInd, myText, 'OverlaySubSubTitle');
+                    this.shopTextFields[i] = this.createText(400, 26 + 38 * vertInd, myText, 'OverlaySubSubTitle');
                     vertInd++;
-                }else{
+                } else {
 
                     let buttonStyle = 'shopButtonBuy';
                     let textStyle = 'overlayText';
-                    let myPrice = '$'+entry.price;
+                    let myPrice = '$' + entry.price;
 
-                    switch(this.getShopItemStatus(entry)){
+                    switch (this.getShopItemStatus(entry)) {
                         case 'Locked':
                             buttonStyle = 'shopButtonLocked';
                             textStyle = 'overlayLocked';
                             myPrice = 'Locked';
-                        break;
+                            break;
                         case 'Bought':
                             buttonStyle = 'shopButtonBought';
                             textStyle = 'overlayBought';
                             myPrice = 'Bought';
-                        break;
+                            break;
                         case '$':
                             buttonStyle = 'shopButtonPoor';
                             textStyle = 'overlayPoor';
-                        break;
+                            break;
                     }
 
-                    this.shopBuyButtons[i] = this.createButton(60, 60 + 40*vertInd, "buy.shop|"+key, buttonStyle);
+                    if ('icon' in entry) {
+                        hPos = 140;
+                        this.iconList.push(
+                            this.createIcon(115, 60 + 40 * vertInd, entry.icon, 1001)
+                        );
+                    } else {
+                        hPos = 100;
+                    }
 
-                    this.shopTextFields[i] = this.createText(100, 60 + 40*vertInd, myText + ': ' + myPrice, textStyle);
+                    this.shopBuyButtons[i] = this.createButton(60, 60 + 40 * vertInd, "buy.shop|" + key, buttonStyle);
+
+                    this.shopTextFields[i] = this.createText(hPos, 60 + 40 * vertInd, myText + ': ' + myPrice, textStyle);
 
                     vertInd++;
                 }
             }
             i++;
         });
-        
-        if(this.shopPageNum > 1){
-            this.prevButton =  this.createButton(200, 550, "Prev.Shop", 'overlayControl');
+
+        if (this.shopPageNum > 1) {
+            this.prevButton = this.createButton(200, 550, "Prev.Shop", 'overlayControl');
         }
-        if(this.shopPageNum < this.shopMaxPage){
-            this.nextButton =  this.createButton(600, 550, "Next.Shop", 'overlayControl');
+        if (this.shopPageNum < this.shopMaxPage) {
+            this.nextButton = this.createButton(600, 550, "Next.Shop", 'overlayControl');
         }
-        if(this.shopMaxPage > 1){
-            this.shopPageNumField = this.createText(400, 550, 'Page '+this.shopPageNum, 'overlayTextCentered');
+        if (this.shopMaxPage > 1) {
+            this.pageNumberField = this.createText(400, 550, 'Page ' + this.shopPageNum, 'overlayTextCentered');
         }
     }
 
-    getShopItemStatus(entry){
+    getShopItemStatus(entry) {
         // Check the requirements are met.
-        if(typeof entry.requires == "string"){
-            if(!('bought' in this.shopItems[entry.requires])){
+        if (typeof entry.requires == "string") {
+            if (!('bought' in this.shopItems[entry.requires])) {
                 return "Locked";
             }
-        }else if(typeof entry.requires == "function"){
-            if(entry.requires() == false){
+        } else if (typeof entry.requires == "function") {
+            if (entry.requires() == false) {
                 return "Locked";
             }
         }
-        
+
         // unique items can only be bought once
-        if(('bought' in entry) && (entry.type == 'unique' || entry.type == 'uniqueItem')){
+        if (('bought' in entry) && (entry.type == 'unique' || entry.type == 'uniqueItem')) {
             return "Bought";
         }
 
         // Check that player has enough money
-        if(entry.price > this.cash){
+        if (entry.price > this.cash) {
             return "$";
         }
 
         return "OK"
     }
 
-    shopBuy(ind){
+    shopBuy(ind) {
         let status = this.getShopItemStatus(this.shopItems[ind])
 
-        if(status == "Locked"){
+        if (status == "Locked") {
             this.showMessage('This is not currently available.');
-        }else if(status == "Bought"){ 
+        } else if (status == "Bought") {
             this.showMessage('You can only have one of these.');
-        }else if(status == "$"){ 
+        } else if (status == "$") {
             this.showMessage("You can't afford that.");
-        }else if(status == "OK"){
+        } else if (status == "OK") {
             this.cash -= this.shopItems[ind].price;
-            this.showMessage(this.shopItems[ind].text + '\nPurchased' )
-            if('bought' in this.shopItems[ind]){
+            this.showMessage(this.shopItems[ind].text + '\nPurchased')
+            if ('bought' in this.shopItems[ind]) {
                 this.shopItems[ind].bought += 1;
-            }else{
+            } else {
                 this.shopItems[ind].bought = 1;
             }
 
-            if(typeof this.shopItems[ind].update == "string"){
+            if (typeof this.shopItems[ind].update == "string") {
                 let directive = this.shopItems[ind].update.split('|');
                 let act = directive[1];
                 let value = parseInt(directive[2]);
                 let myPath = directive[0].split('.');
-                if(myPath.length == 1){
-                    if(act == '+'){
+                if (myPath.length == 1) {
+                    if (act == '+') {
                         this[myPath[0]] += value;
-                    }else if(act == '-'){
+                    } else if (act == '-') {
                         this[myPath[0]] -= value;
-                    }else if(act == '='){
+                    } else if (act == '=') {
                         this[myPath[0]] = value;
                     }
-                }else if(myPath.length == 2){
-                    if(act == '+'){
+                } else if (myPath.length == 2) {
+                    if (act == '+') {
                         this[myPath[0]][myPath[1]] += value;
-                    }else if(act == '-'){
+                    } else if (act == '-') {
                         this[myPath[0]][myPath[1]] -= value;
-                    }else if(act == '='){
+                    } else if (act == '=') {
                         this[myPath[0]][myPath[1]] = value;
                     }
-                }else if(myPath.length == 3){
-                    if(act == '+'){
+                } else if (myPath.length == 3) {
+                    if (act == '+') {
                         this[myPath[0]][myPath[1]][myPath[2]] += value;
-                    }else if(act == '-'){
+                    } else if (act == '-') {
                         this[myPath[0]][myPath[1]][myPath[2]] -= value;
-                    }else if(act == '='){
+                    } else if (act == '=') {
                         this[myPath[0]][myPath[1]][myPath[2]] = value;
                     }
-                }else if(myPath.length == 4){
-                    if(act == '+'){
+                } else if (myPath.length == 4) {
+                    if (act == '+') {
                         this[myPath[0]][myPath[1]][myPath[2]][myPath[3]] += value;
-                    }else if(act == '-'){
+                    } else if (act == '-') {
                         this[myPath[0]][myPath[1]][myPath[2]][myPath[3]] -= value;
-                    }else if(act == '='){
+                    } else if (act == '=') {
                         this[myPath[0]][myPath[1]][myPath[2]][myPath[3]] = value;
                     }
                 }
-            }else if(typeof this.shopItems[ind].update == "function"){
+            } else if (typeof this.shopItems[ind].update == "function") {
                 this.shopItems[ind].update();
             }
 
@@ -1604,100 +1992,116 @@ class Example extends Phaser.Scene {
         }
     }
 
-    prevShopPage(){
-        if(this.shopPageNum != 0){
+    prevShopPage() {
+        if (this.shopPageNum != 0) {
             this.shopPageNum--;
             this.clearShop();
             this.openShop();
         }
     }
 
-    nextShopPage(){
-        if(this.shopPageNum < this.shopMaxPage){
+    nextShopPage() {
+        if (this.shopPageNum < this.shopMaxPage) {
             this.shopPageNum++;
             this.clearShop();
             this.openShop();
         }
     }
 
-    clearShop(){
+    clearShop() {
         this.titleField.destroy();
         this.titleField = null;
         this.backButton.destroy();
         this.backButton = null;
-        if(this.prevButton){
+        if (this.prevButton) {
             this.prevButton.destroy();
             this.prevButton = null;
         }
-        if(this.nextButton){
+        if (this.nextButton) {
             this.nextButton.destroy();
             this.nextButton = null;
         }
-        if(this.shopPageNumField){
-            this.shopPageNumField.destroy();
-            this.shopPageNumField = null;
+        if (this.pageNumberField) {
+            this.pageNumberField.destroy();
+            this.pageNumberField = null;
         }
-        
+
         let i = 0;
         Object.entries(this.shopItems).forEach(([key, entry]) => {
-            if(i in this.shopTextFields && this.shopTextFields[i]){
+            if (i in this.shopTextFields && this.shopTextFields[i]) {
                 this.shopTextFields[i].destroy();
                 this.shopTextFields[i] = null;
             }
-            if(i in this.shopBuyButtons && this.shopBuyButtons[i]){
+            if (i in this.shopBuyButtons && this.shopBuyButtons[i]) {
                 this.shopBuyButtons[i].destroy();
                 this.shopBuyButtons[i] = null;
             }
             i++;
         });
+
+        while (this.iconList.length) {
+            let myIcon = this.iconList.pop();
+            if (myIcon)
+                myIcon.destroy();
+        }
     }
 
-    closeShop(){
+    closeShop() {
         this.activeGroup = 'Main';
         this.clearShop();
         this.backdrop.alpha = 0;
-        this.pausedWMouse = false; 
+        this.pausedWMouse = false;
     }
 
-        // ========================== Inventory
+    // ========================== Inventory
 
-    openInventory(){
+    openInventory() {
         this.activeGroup = 'Overlay';
         this.backdrop.alpha = 1;
-        this.pausedWMouse = true; 
+        this.pausedWMouse = true;
 
         this.titleField = this.createText(400, 15, 'Inventory', 'overlayTitle');
         this.titleField.setOrigin(0.5);
         this.titleField.setDepth(1002);
 
-        this.backButton =  this.createButton(100, 15, "Close.Inventory", 'overlayControl');
+        this.backButton = this.createButton(100, 15, "Close.Inventory", 'overlayControl');
 
         let i = 0;
         let pageInd = 1;
         this.inventoryCount = 0;
         let highRange = this.inventoryPage * 30;
         let lowRange = highRange - 30;
+        let hPos = 0;
 
         Object.entries(this.shopItems).forEach(([key, entry]) => {
 
-            if((entry.type == 'uniqueItem' || entry.type == 'repeatItem') && 
-                ('bought' in entry && entry.bought>0)){
+            if ((entry.type == 'uniqueItem' || entry.type == 'repeatItem') &&
+                ('bought' in entry && entry.bought > 0)) {
                 this.inventoryCount++
-                if(this.inventoryCount>lowRange && this.inventoryCount<=highRange){
+                if (this.inventoryCount > lowRange && this.inventoryCount <= highRange) {
                     // show this
-                    pageInd ++;
+                    pageInd++;
                     let myText = this.unToken(entry.text);
-                    if(entry.bought < 10){
-                        myText = '   [x'+entry.bought + '] '  + myText;
-                    }else if(entry.bought < 100){
-                        myText =  '  [x'+entry.bought +'] '  + myText;
-                    }else if(entry.bought < 1000){
-                        myText = ' [x'+entry.bought + '] '  + myText;
-                    }else{
-                        myText = '[x'+entry.bought + '] '  + myText;
+                    if (entry.bought < 10) {
+                        myText = '   [x' + entry.bought + '] ' + myText;
+                    } else if (entry.bought < 100) {
+                        myText = '  [x' + entry.bought + '] ' + myText;
+                    } else if (entry.bought < 1000) {
+                        myText = ' [x' + entry.bought + '] ' + myText;
+                    } else {
+                        myText = '[x' + entry.bought + '] ' + myText;
                     }
 
-                    this.shopTextFields[i] = this.createText(pageInd % 2 ? 400 : 10, 35 + 30*(pageInd>>1), myText, 'overlayText');
+                    if ('icon' in entry) {
+                        hPos = 30;
+                        this.iconList.push(
+                            this.createIcon(pageInd % 2 ? 430 : 40, 35 + 30 * (pageInd >> 1), entry.icon, 1001)
+                        );
+                    } else {
+                        hPos = 0;
+                    }
+
+                    this.shopTextFields[i] = this.createText(pageInd % 2 ? 400 + hPos : 10 + hPos, 35 + 30 * (pageInd >> 1), myText, 'overlayText');
 
                 }
             }
@@ -1709,7 +2113,7 @@ class Example extends Phaser.Scene {
 
         this.maxInventoryPage = Math.ceil((this.inventoryCount) / 30);
 
-        if(this.maxInventoryPage < 1){
+        if (this.maxInventoryPage < 1) {
             this.maxInventoryPage = 1;
         }
 
@@ -1723,79 +2127,85 @@ class Example extends Phaser.Scene {
             maxInventoryPage: this.maxInventoryPage
         });
 
-        if(this.inventoryPage > this.maxInventoryPage){
+        if (this.inventoryPage > this.maxInventoryPage) {
             this.inventoryPage = this.maxInventoryPage;
             this.closeInventory();
             this.openInventory();
         }
-        
-        if(this.inventoryPage > 1){
-            this.prevButton =  this.createButton(200, 550, "Prev.Inventory", 'overlayControl');
+
+        if (this.inventoryPage > 1) {
+            this.prevButton = this.createButton(200, 550, "Prev.Inventory", 'overlayControl');
         }
-        if(this.inventoryPage < this.maxInventoryPage){
-            this.nextButton =  this.createButton(600, 550, "Next.Inventory", 'overlayControl');
+        if (this.inventoryPage < this.maxInventoryPage) {
+            this.nextButton = this.createButton(600, 550, "Next.Inventory", 'overlayControl');
         }
 
-        if(this.maxInventoryPage > 1){
-            this.shopPageNumField = this.createText(400, 550, 'Page '+this.inventoryPage, 'overlayTextCentered');
+        if (this.maxInventoryPage > 1) {
+            this.pageNumberField = this.createText(400, 550, 'Page ' + this.inventoryPage, 'overlayTextCentered');
         }
     }
 
-    prevInventoryPage(){
-        if(this.inventoryPage != 0){
+    prevInventoryPage() {
+        if (this.inventoryPage != 0) {
             this.inventoryPage--;
             this.clearInventory();
             this.openInventory();
         }
     }
 
-    nextInventoryPage(){
-        if(this.inventoryPage < this.maxInventoryPage){
+    nextInventoryPage() {
+        if (this.inventoryPage < this.maxInventoryPage) {
             this.inventoryPage++;
             this.clearInventory();
             this.openInventory();
         }
     }
 
-    clearInventory(){
+    clearInventory() {
         this.titleField.destroy();
         this.titleField = null;
         this.backButton.destroy();
         this.backButton = null;
 
-        if(this.prevButton){
+        if (this.prevButton) {
             this.prevButton.destroy();
             this.prevButton = null;
         }
-        if(this.nextButton){
+        if (this.nextButton) {
             this.nextButton.destroy();
             this.nextButton = null;
         }
 
-        if(this.shopPageNumField){
-            this.shopPageNumField.destroy();
-            this.shopPageNumField = null;
+        if (this.pageNumberField) {
+            this.pageNumberField.destroy();
+            this.pageNumberField = null;
         }
-        
+
         let i = 0;
         Object.entries(this.shopItems).forEach(([key, entry]) => {
-            if(i in this.shopTextFields && this.shopTextFields[i]){
+            if (i in this.shopTextFields && this.shopTextFields[i]) {
                 this.shopTextFields[i].destroy();
                 this.shopTextFields[i] = null;
             }
-            if(i in this.shopBuyButtons && this.shopBuyButtons[i]){
+            if (i in this.shopBuyButtons && this.shopBuyButtons[i]) {
                 this.shopBuyButtons[i].destroy();
                 this.shopBuyButtons[i] = null;
             }
             i++;
         });
+
+        while (this.iconList.length) {
+            let myIcon = this.iconList.pop();
+            if (myIcon)
+                myIcon.destroy();
+        }
     }
 
-    closeInventory(){
+    closeInventory() {
         this.activeGroup = 'Main';
         this.clearShop();
         this.backdrop.alpha = 0;
-        this.pausedWMouse = false; 
+        this.pausedWMouse = false;
     }
 
 
@@ -1863,43 +2273,43 @@ class Example extends Phaser.Scene {
 
         this.makeTextSelfFill(this.dialogText[ind]);
 
-        if(this.skipButton == null){
+        if (this.skipButton == null) {
             this.skipButton = this.createButton(700, 580, 'Skip', 'overlayControl');
         }
-        
+
     }
 
-    unToken(text){
+    unToken(text) {
         let textArr = text.split('~');
         let newText = '';
-        for(let i = 0; i<textArr.length; i++){
-            if(i%2 == 0){
+        for (let i = 0; i < textArr.length; i++) {
+            if (i % 2 == 0) {
                 newText = newText + textArr[i];
-            }else{
+            } else {
                 let myPath = textArr[i].split('.');
-                if(myPath.length == 1 && 
+                if (myPath.length == 1 &&
                     (myPath[0] in this)
-                ){
+                ) {
                     newText = newText + this[myPath[0]];
-                }else if(myPath.length == 2 && 
-                    (myPath[0] in this) && 
+                } else if (myPath.length == 2 &&
+                    (myPath[0] in this) &&
                     (myPath[1] in this[myPath[0]])
-                ){
+                ) {
                     newText = newText + this[myPath[0]][myPath[1]];
-                }else if(myPath.length == 3 && 
-                    (myPath[0] in this) && 
-                    (myPath[1] in this[myPath[0]]) && 
+                } else if (myPath.length == 3 &&
+                    (myPath[0] in this) &&
+                    (myPath[1] in this[myPath[0]]) &&
                     (myPath[2] in this[myPath[0]][myPath[1]])
-                ){
+                ) {
                     newText = newText + this[myPath[0]][myPath[1]][myPath[2]];
-                }else if(myPath.length == 4 && 
-                    (myPath[0] in this) && 
-                    (myPath[1] in this[myPath[0]]) && 
-                    (myPath[2] in this[myPath[0]][myPath[1]])&& 
+                } else if (myPath.length == 4 &&
+                    (myPath[0] in this) &&
+                    (myPath[1] in this[myPath[0]]) &&
+                    (myPath[2] in this[myPath[0]][myPath[1]]) &&
                     (myPath[2] in this[myPath[0]][myPath[1]][myPath[2]])
-                ){
-                     newText = newText + this[myPath[0]][myPath[1]][myPath[2]][myPath[3]];
-                }else{
+                ) {
+                    newText = newText + this[myPath[0]][myPath[1]][myPath[2]][myPath[3]];
+                } else {
                     newText = newText + '---';
                 }
             }
@@ -1907,24 +2317,24 @@ class Example extends Phaser.Scene {
         return newText;
     }
 
-    addFullPageDialog(text){
+    addFullPageDialog(text) {
         this.activeGroup = 'Overlay';
         this.backdrop.alpha = 1;
         this.fullPageDialog = this.createText(20, 20, '', 'overlayDialog');
         text = this.linewrapString(this.unToken(text), 50);
         this.makeTextSelfFill(this.fullPageDialog, text);
 
-        if(this.skipButton == null){
+        if (this.skipButton == null) {
             this.skipButton = this.createButton(700, 580, 'Skip', 'overlayControl');
         }
     }
 
     clearDialog(ind = null) {
-        
-        if(this.fullPageDialog != null){
+
+        if (this.fullPageDialog != null) {
             this.fullPageDialog.destroy();
-             this.fullPageDialog = null;
-        }else if (ind === null) {
+            this.fullPageDialog = null;
+        } else if (ind === null) {
             for (let i = 0; i < this.dialogText.length; i++) {
                 this.clearDialog(i);
             }
@@ -1936,7 +2346,7 @@ class Example extends Phaser.Scene {
         }
     }
 
-    closeDialog(ind = null){
+    closeDialog(ind = null) {
         this.activeGroup = 'Main';
         this.clearDialog(ind);
         this.backdrop.alpha = 0;
@@ -1946,14 +2356,14 @@ class Example extends Phaser.Scene {
 
 
     checkRectOverlap(rect1, rect2) {
-        return !(rect1.x + rect1.width < rect2.x || 
-                rect1.x > rect2.x + rect2.width || 
-                rect1.y + rect1.height < rect2.y ||
-                rect1.y > rect2.y + rect2.height);
+        return !(rect1.x + rect1.width < rect2.x ||
+            rect1.x > rect2.x + rect2.width ||
+            rect1.y + rect1.height < rect2.y ||
+            rect1.y > rect2.y + rect2.height);
     }
 
 
-    checkForCollision(x1,y1,h1,w1,x2,y2,h2,w2){
+    checkForCollision(x1, y1, h1, w1, x2, y2, h2, w2) {
         return !(x1 + w1 < x2 || x1 > x2 + w2 || y1 + h1 < y2 || y1 > y + h2);
     }
 
