@@ -18,6 +18,7 @@
 // Rotatable Bars.
 // Touch screen controls.
 // Title Screen.
+// Simple movement engine.
 
 
 class Example extends Phaser.Scene {
@@ -61,6 +62,10 @@ class Example extends Phaser.Scene {
         this.scripts = [
 
         ];
+
+        this.externalScripts = [
+            'https://raw.githubusercontent.com/hoytman/RoseTemplateV1/refs/heads/main/helpers.js'
+        ]
 
         this.styles = {
             base: {
@@ -578,6 +583,12 @@ class Example extends Phaser.Scene {
         }
         for (let i = 0; i < this.scripts.length; i++) {
             this.load.script(this.scripts[i][0], this.scripts[i][1]);
+        }
+        for (let i = 0; i < this.externalScripts.length; i++) {
+                    const script = document.createElement('script');
+                    script.src = this.externalScripts[i]+'?t='+Date.now();
+                    script.async = true; // Optional: Load the script asynchronously
+                    document.head.appendChild(script);
         }
 
         // Update Loading alue
