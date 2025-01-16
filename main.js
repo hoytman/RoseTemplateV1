@@ -21,9 +21,9 @@
 // Simple movement engine.
 
 class Example extends Phaser.Scene {
-    constructor() {
-        super();
 
+
+    user_init(){
         // Game Settings
         this.gmaeTitle = 'My Game'
         this.uniqueGameID = 'jwbenfjbwekjfb';
@@ -31,22 +31,13 @@ class Example extends Phaser.Scene {
         this.score = 0;
         this.cash = 100;
 
-        this.origins = {
-            tLeft: [0, 0],
-            cLeft: [0, .5],
-            bLeft: [0, 1],
-            tCenter: [0.5, 0],
-            cCenter: [0.5, .5],
-            bCenter: [0.5, 1],
-            tRight: [1, 0],
-            cRight: [1, .5],
-            bRight: [1, 1],
-        };
+        // this.mousePointerFieldIcon = '◣';
+        //this.mousePointerFieldIcon = '↘';
+        this.mousePointerFieldIcon = '↖'
 
         this.images = [
-            ['smile', 'https://play.rosebud.ai/assets/smile.png?xqLm'],
-            ['overlay', 'https://play.rosebud.ai/assets/View.png?AK9S'],
-            ['icon', 'https://play.rosebud.ai/assets/icon.png?7TRa']
+            'https://play.rosebud.ai/assets/smile.png?xqLm',
+            'https://play.rosebud.ai/assets/icon.png?7TRa'
         ];
 
         this.audios = [
@@ -64,7 +55,8 @@ class Example extends Phaser.Scene {
 
         this.externalScripts = [
             'https://raw.githubusercontent.com/hoytman/RoseTemplateV1/refs/heads/main/helpers.js'
-        ]
+        ];
+
 
         this.styles = {
             base: {
@@ -450,6 +442,86 @@ class Example extends Phaser.Scene {
             icon: 'icon'
         }]
 
+
+    }
+
+    user_create(){
+
+        // User added step code
+
+        // Setup background
+        this.background = this.add.rectangle(400, 300, 800, 600, this.backgroundColor);
+        this.background.depth = 0;
+
+        // Volumn bar
+        this.volumeControl = this.createValueBar('volume', 460, 35, 300, 20, 10, 0xcccccc, 0x333333);
+        this.enableInteractiveBar('volume');
+        this.updateValueBar('volume', 1, 1);
+
+        this.mainButtons = [
+            this.createButton(100, 150, 'Restart Timeline'),
+            this.createButton(100, 200, 'Game Over'),
+            this.createButton(100, 250, 'Show Scores'),
+            this.createButton(100, 300, 'Hide Scores'),
+            this.createButton(100, 350, 'Reset Scores'),
+            this.createButton(100, 400, 'Save Scores'),
+            this.createButton(100, 450, 'Pause'),
+            this.createButton(100, 500, 'Up Score'),
+            this.createButton(100, 550, 'You Win'),
+
+            this.createButton(280, 150, 'Play Music 1'),
+            this.createButton(280, 200, 'Stop Music'),
+            this.createButton(280, 250, 'Play Sound 2'),
+            this.createButton(280, 300, 'Stop Sound'),
+            this.createButton(280, 350, 'Play Music Intro'),
+            this.createButton(280, 400, 'Create Bar'),
+            this.createButton(280, 450, 'Damage'),
+            this.createButton(280, 500, 'Heal'),
+            this.createButton(280, 550, 'Destroy Bar'),
+
+            this.createButton(480, 150, 'Show Achievements'),
+            this.createButton(480, 200, 'Reset Achievements'),
+            this.createButton(480, 250, 'Open Shop'),
+            this.createButton(480, 300, 'Add Cash'),
+            this.createButton(480, 350, 'Show Message'),
+            this.createButton(480, 400, 'Open Inventory'),
+            this.createButton(480, 450, 'Floating Nums'),
+            this.createButton(480, 500, 'Play Vocal'),
+            this.createButton(480, 550, 'Stop Vocal')
+        ];
+    }
+
+    user_step(){
+
+        // User added step code
+
+    }
+
+    constructor() {
+        super();
+
+        this.user_init();
+
+
+
+
+
+        // Non ediatble c
+
+        this.origins = {
+            tLeft: [0, 0],
+            cLeft: [0, .5],
+            bLeft: [0, 1],
+            tCenter: [0.5, 0],
+            cCenter: [0.5, .5],
+            bCenter: [0.5, 1],
+            tRight: [1, 0],
+            cRight: [1, .5],
+            bRight: [1, 1],
+        };
+
+
+
         // ========================== Not manual settings ======================
 
         // Game State Values
@@ -490,7 +562,10 @@ class Example extends Phaser.Scene {
         this.background = null;
         this.leftSideTextField = null;
         this.highScoreTextFields = [];
+
         this.mousePointerField = null;
+        this.mousePointerField_x = 0;
+        this.mousePointerField_y = 0;
         this.musicArr = {};
         this.soundArr = {};
         this.currentMusic = null;
@@ -512,9 +587,7 @@ class Example extends Phaser.Scene {
         this.prevButton = null;
         this.nextButton = null;
         this.iconList = [];
-
         this.shopMaxPage = null;
-
         this.inventoryCount = 0;
         this.inventoryPage = 1;
         this.maxInventoryPage = 1;
@@ -539,7 +612,15 @@ class Example extends Phaser.Scene {
 
         // Load Scripts
         for (let i = 0; i < this.images.length; i++) {
-            this.load.image(this.images[i][0], this.images[i][1]);
+            if(typeof this.images[i] == 'array'){
+                this.load.image(this.images[i][0], this.images[i][1]);
+            }else{
+                let myUrl = this.images[i];
+                let myName = myUrl.replace("https://play.rosebud.ai/assets/", ""); 
+                let index = myName.indexOf('.');
+                myName = myName.substring(0, index);
+                this.load.image(myName, myUrl);
+            }
         }
         for (let i = 0; i < this.audios.length; i++) {
             this.load.audio(this.audios[i][1], this.audios[i][2]);
@@ -548,10 +629,10 @@ class Example extends Phaser.Scene {
             this.load.script(this.scripts[i][0], this.scripts[i][1]);
         }
         for (let i = 0; i < this.externalScripts.length; i++) {
-                    const script = document.createElement('script');
-                    script.src = this.externalScripts[i]+'?t='+Date.now();
-                    script.async = true; // Optional: Load the script asynchronously
-                    document.head.appendChild(script);
+            const script = document.createElement('script');
+            script.src = this.externalScripts[i] + '?t=' + Date.now();
+            script.async = true; // Optional: Load the script asynchronously
+            document.head.appendChild(script);
         }
 
         // Update Loading alue
@@ -595,52 +676,13 @@ class Example extends Phaser.Scene {
             }
         });
 
-        // Setup background
-        this.background = this.add.rectangle(400, 300, 800, 600, this.backgroundColor);
-        this.background.depth = 0;
-
-        // Volumn bar
-        this.volumeControl = this.createValueBar('volume', 460, 35, 300, 20, 10, 0xcccccc, 0x333333);
-        this.enableInteractiveBar('volume');
-        this.updateValueBar('volume', 1, 1);
-
-        this.mainButtons = [
-            this.createButton(100, 150, 'Restart Timeline'),
-            this.createButton(100, 200, 'Game Over'),
-            this.createButton(100, 250, 'Show Scores'),
-            this.createButton(100, 300, 'Hide Scores'),
-            this.createButton(100, 350, 'Reset Scores'),
-            this.createButton(100, 400, 'Save Scores'),
-            this.createButton(100, 450, 'Pause'),
-            this.createButton(100, 500, 'Up Score'),
-            this.createButton(100, 550, 'You Win'),
-
-            this.createButton(280, 150, 'Play Music 1'),
-            this.createButton(280, 200, 'Stop Music'),
-            this.createButton(280, 250, 'Play Sound 2'),
-            this.createButton(280, 300, 'Stop Sound'),
-            this.createButton(280, 350, 'Play Music Intro'),
-            this.createButton(280, 400, 'Create Bar'),
-            this.createButton(280, 450, 'Damage'),
-            this.createButton(280, 500, 'Heal'),
-            this.createButton(280, 550, 'Destroy Bar'),
-
-            this.createButton(480, 150, 'Show Achievements'),
-            this.createButton(480, 200, 'Reset Achievements'),
-            this.createButton(480, 250, 'Open Shop'),
-            this.createButton(480, 300, 'Add Cash'),
-            this.createButton(480, 350, 'Show Message'),
-            this.createButton(480, 400, 'Open Inventory'),
-            this.createButton(480, 450, 'Floating Nums'),
-            this.createButton(480, 500, 'Play Vocal'),
-            this.createButton(480, 550, 'Stop Vocal')
-        ];
+        this.user_create();
 
         this.created = true;
     }
 
-    setForGroup(target, property, value){
-        for(let i =0; i < target.length; i++){
+    setForGroup(target, property, value) {
+        for (let i = 0; i < target.length; i++) {
             target[i][property] = value;
         }
 
@@ -650,7 +692,7 @@ class Example extends Phaser.Scene {
         if (!this.resourcesLoaded || !this.created || this.gameEnded || this.paused) {
             return;
         }
-        
+
         if (tarObject !== null && tarObject.deactivated) {
             return;
         }
@@ -809,7 +851,7 @@ class Example extends Phaser.Scene {
                 this.currentVolume = level;
             }
 
-            this.displayVolume = Math.round(this.currentVolume*100);
+            this.displayVolume = Math.round(this.currentVolume * 100);
 
             for (let i = 0; i < this.audios.length; i++) {
                 if (tar === null || tar == this.audios[i][1]) {
@@ -1005,8 +1047,20 @@ class Example extends Phaser.Scene {
     }
 
     createOverlays() {
+
         // Create Mouse Pointer
-        this.mousePointerField = this.add.text(-1000, -1000, '◣', {
+        if (this.mousePointerFieldIcon == '◣') {
+            this.mousePointerField_x = -5;
+            this.mousePointerField_y = -36;
+        } else if (this.mousePointerFieldIcon == '↘') {
+            this.mousePointerField_x = -32;
+            this.mousePointerField_y = -36;
+        } else if (this.mousePointerFieldIcon == '↖') {
+            this.mousePointerField_x = -3;
+            this.mousePointerField_y = -7;
+        }
+
+        this.mousePointerField = this.add.text(-1000, -1000, this.mousePointerFieldIcon, {
             fontSize: '36px Arial',
             fill: '#ff0000',
             fontStyle: 'bold',
@@ -1032,12 +1086,11 @@ class Example extends Phaser.Scene {
         this.pauseBackground.on('pointerdown', this.unPauseGame, this);
         this.pauseBackground.setDepth(10000);
 
-
-
         //Message
         this.messageText = this.createText(780, 20, '', 'messages');
         this.messageText.fadeMeToGone = 0;
         this.messageText.alpha = 0;
+
     }
 
     unPauseGame() {
@@ -1112,20 +1165,20 @@ class Example extends Phaser.Scene {
             this.barList[key].value = this.barList[key].max;
         }
 
-        if(this.barList[key].interactive){
+        if (this.barList[key].interactive) {
             this.barList[key].bar.width = 10;
 
-            this.barList[key].bar.x = 
+            this.barList[key].bar.x =
                 this.barList[key].background.x + 5 +
                 ((this.barList[key].long - 20) *
-                (this.barList[key].value / this.barList[key].max));
+                    (this.barList[key].value / this.barList[key].max));
 
-        }else{
+        } else {
             this.barList[key].bar.width =
                 this.barList[key].long *
                 (this.barList[key].value / this.barList[key].max)
         }
-        
+
     }
 
     enableInteractiveBar(name) {
@@ -1158,12 +1211,11 @@ class Example extends Phaser.Scene {
     updateTextDisplays() {
         let myText = '';
 
-        if(this.leftSideText.length > 0){
-            for (let i = 0; i < this.leftSideText.length; i++) {
-                myText = myText + this.unToken(this.leftSideText[i]) + '\n';
-            }
-            this.leftSideTextField.setText(myText);
+        for (let i = 0; i < this.leftSideText.length; i++) {
+            myText = myText + this.unToken(this.leftSideText[i]) + '\n';
         }
+
+        this.leftSideTextField.setText(myText);
 
         // Floating Numbers
         if (this.floatingNumbers.length > 0) {
@@ -1256,8 +1308,8 @@ class Example extends Phaser.Scene {
             }
         }
 
-        this.mousePointerField.x = this.input.mousePointer.x - 5;
-        this.mousePointerField.y = this.input.mousePointer.y - 36;
+        this.mousePointerField.x = this.input.mousePointer.x + this.mousePointerField_x;
+        this.mousePointerField.y = this.input.mousePointer.y + this.mousePointerField_y;
         if (this.actualTime % 400 > 200) {
             this.mousePointerField.setColor('#ffffff');
         } else {
@@ -1269,7 +1321,7 @@ class Example extends Phaser.Scene {
             return;
         }
         this.setForGroup(this.mainButtons, 'deactivated', false);
-        
+
 
         // Remove the loading div if it exists
         if (this.loadingDiv) {
@@ -1327,6 +1379,7 @@ class Example extends Phaser.Scene {
         }
 
         // step code
+        this.user_step();
 
         this.inStep = false;
     }
@@ -1471,7 +1524,7 @@ class Example extends Phaser.Scene {
 
         // Add pointer down effect
         button.on('pointerdown', () => {
-            if( button.deactivated){
+            if (button.deactivated) {
                 return;
             }
             if ('downSound' in button.myOriginalStyle) {
@@ -1484,7 +1537,7 @@ class Example extends Phaser.Scene {
 
         // Add pointer up effect
         button.on('pointerup', () => {
-            if( button.deactivated){
+            if (button.deactivated) {
                 return;
             }
             if ('upSound' in button.myOriginalStyle) {
@@ -1611,7 +1664,7 @@ class Example extends Phaser.Scene {
 
         this.highScoreTextFields[0].alpha = 1;
         for (let i = 1; i <= 10; i++) {
-            let scoreInd = i-1
+            let scoreInd = i - 1
             this.highScoreTextFields[i].alpha = 1;
             if (scoreInd < highScores.length) {
                 this.highScoreTextFields[i].setText(i + ': ' + highScores[scoreInd])
@@ -2348,7 +2401,13 @@ const config = {
     },
     width: 800,
     height: 600,
-    scene: Example
+    scene: Example,
+    dom: {
+        createContainer: true
+    },
+    css: {
+        cursor: 'none'
+    }
 };
 
 window.phaserGame = new Phaser.Game(config);
