@@ -26,7 +26,7 @@ class Example extends Phaser.Scene {
 
        // Game Settings
         this.gmaeTitle = 'My Game'
-        this.uniqueGameID = 'jwbenfjbwekjfb';
+        this.uniqueGameID = 'n60ny5771f2m3fvfju5n';
         this.backgroundColor = 0x006600;
         this.score = 0;
         this.cash = 100;
