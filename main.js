@@ -279,19 +279,6 @@ class Example extends Phaser.Scene {
 
         };
 
-        this.gameData = {
-            enemies: {
-                toad: {
-                    size: 10,
-                    tall: 50,
-                    health: 5,
-                    damage: 30,
-                    scale: 0.2,
-                    speed: 1.5
-                }
-            }
-        }
-
         this.shopItems = {
             'HealthTitle': {
                 type: 'title',
@@ -408,20 +395,9 @@ class Example extends Phaser.Scene {
             [null, 'Do nothing'] // Trys to "do nothong" forever.
         ];
 
-        this.definitions = {
-            player: {
-                image: null,
-                hit: [
-                    10 | 10 | 10 | 10
-                ]
-            }
-        }
-
         // Text Fields in the upper left corner.
         this.leftSideText = [
-            'Score: ~score~',
-            'Step: ~stepCount~',
-            'Cash: $~cash~',
+
         ];
 
         this.achievements = [{
@@ -445,12 +421,6 @@ class Example extends Phaser.Scene {
     }
         
     user_create(){
-
-        // User added step code
-
-        // Setup background
-        this.background = this.add.rectangle(400, 300, 800, 600, this.backgroundColor);
-        this.background.depth = 0;
 
         // Volumn bar
         this.volumeControl = this.createValueBar('volume', 460, 35, 300, 20, 10, 0xcccccc, 0x333333, true);
@@ -1085,6 +1055,9 @@ class Example extends Phaser.Scene {
     }
 
     createOverlays() {
+
+        this.background = this.add.rectangle(400, 300, 800, 600, this.backgroundColor);
+        this.background.depth = 0;
 
         // Create Mouse Pointer
         if (this.mousePointerFieldIcon == '◣') {
