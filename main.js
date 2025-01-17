@@ -22,9 +22,9 @@
 
 class Example extends Phaser.Scene {
 
+    user_constructor(){
 
-    user_init(){
-        // Game Settings
+       // Game Settings
         this.gmaeTitle = 'My Game'
         this.uniqueGameID = 'jwbenfjbwekjfb';
         this.backgroundColor = 0x006600;
@@ -37,7 +37,8 @@ class Example extends Phaser.Scene {
 
         this.images = [
             'https://play.rosebud.ai/assets/smile.png?xqLm',
-            'https://play.rosebud.ai/assets/icon.png?7TRa'
+            'https://play.rosebud.ai/assets/icon.png?7TRa',
+            'https://play.rosebud.ai/assets/ocean_overlay_2.png?6R2k'
         ];
 
         this.audios = [
@@ -418,10 +419,9 @@ class Example extends Phaser.Scene {
 
         // Text Fields in the upper left corner.
         this.leftSideText = [
-            'Score: ~score~                                  Volume: ~displayVolume~',
+            'Score: ~score~',
             'Step: ~stepCount~',
             'Cash: $~cash~',
-            'Message Que: ~messageList.length~',
         ];
 
         this.achievements = [{
@@ -442,9 +442,8 @@ class Example extends Phaser.Scene {
             icon: 'icon'
         }]
 
-
     }
-
+        
     user_create(){
 
         // User added step code
@@ -454,8 +453,7 @@ class Example extends Phaser.Scene {
         this.background.depth = 0;
 
         // Volumn bar
-        this.volumeControl = this.createValueBar('volume', 460, 35, 300, 20, 10, 0xcccccc, 0x333333);
-        this.enableInteractiveBar('volume');
+        this.volumeControl = this.createValueBar('volume', 460, 35, 300, 20, 10, 0xcccccc, 0x333333, true);
         this.updateValueBar('volume', 1, 1);
 
         this.mainButtons = [
@@ -489,22 +487,154 @@ class Example extends Phaser.Scene {
             this.createButton(480, 500, 'Play Vocal'),
             this.createButton(480, 550, 'Stop Vocal')
         ];
+
+
     }
 
     user_step(){
 
-        // User added step code
+    }
+
+
+    user_function_hub(name, params, tarObject){
+
+        switch (name) {
+            case 'Restart Timeline':
+                this.timelineRestart();
+                break;
+            case 'Game Over':
+                this.showGameOverScreen();
+                break;
+            case 'You Win':
+                this.showWinScreen();
+                break;
+            case 'Show Scores':
+                this.showHighScores();
+                break;
+            case 'Hide Scores':
+                this.hideHighScores();
+                break;
+            case 'Reset Scores':
+                this.resetHighScores();
+                break;
+            case 'Save Scores':
+                this.saveHighScore();
+                break;
+            case 'Pause':
+                this.pauseGame();
+                break;
+            case 'Up Score':
+                this.score += 100;
+                break;
+            case 'Add Dialog':
+                this.addDialog(params[0], params[1], params[2], params[3]);
+                break;
+            case 'clearDialog':
+                this.clearDialog();
+                break;
+            case 'closeDialog':
+                this.closeDialog();
+                break;
+            case 'Play Music 1':
+                this.playMusic('music1');
+                break;
+            case 'Play Music Intro':
+                this.playMusicWithIntro('intro', 'music2');
+                break;
+            case 'Stop Music':
+                this.pauseMusic();
+                break;
+            case 'Play Sound 2':
+                this.playSound('thunk');
+                break;
+            case 'Stop Sound':
+                this.stopSounds();
+                break;
+            case 'Play Vocal':
+                this.playVocal('voice');
+                break;
+            case 'Stop Vocal':
+                this.pauseVocal();
+                break;
+            case 'Create Bar':
+                this.createValueBar('player', 500, 10, 100, 10, 2000, 0x00ff00, 0xff0000);
+                break;
+            case 'Damage':
+                this.barList.player.value -= 10;
+                break;
+            case 'Heal':
+                this.barList.player.value += 10;
+                break;
+            case 'Destroy Bar':
+                this.destroyValueBar('player');
+                break;
+            case 'addFullPageDialog1':
+                this.addFullPageDialog("On the other score=~score~ hand, we denounce with righteous indignation and dislike men who are so beguiled and demoralized by the charms of pleasure of the moment, so blinded by desire, that they cannot foresee the pain and trouble that are bound to ensue; and equal blame belongs to those who fail in their duty through weakness of will, which is the same as saying through shrinking from toil and pain. These cases are perfectly simple and easy to distinguish. In a free hour, when our power of choice is untrammelled and when nothing prevents our being able to do what we like best, every pleasure is to be welcomed and every pain avoided. But in certain circumstances and owing to the claims of duty or the obligations of business it will frequently occur that pleasures have to be repudiated and annoyances accepted.");
+                break;
+            case 'Skip':
+                this.timelineAdvance();
+                break;
+            case 'show Message':
+                this.showMessage(params[0]);
+                break;
+            case 'Show Achievements':
+                this.showAchievements();
+            break;
+
+            case 'Reset Achievements':
+                this.resetAchievements();
+                break;
+            case 'Open Shop':
+                this.openShop();
+            break;
+            
+            case 'Add Cash':
+                this.cash += 100;
+                break;
+            case 'Show Message':
+                this.showMessage('This is a message');
+                break;
+            case 'Open Inventory':
+                this.openInventory();
+                break;
+            case 'Floating Nums':
+                for (let i = 0; i < 10; i++) {
+                    const randomNumber = Phaser.Math.Between(1, 99);
+                    const randomx = Phaser.Math.Between(200, 600);
+                    const randomy = Phaser.Math.Between(200, 400);
+                    this.addFloatingNumber(randomx, randomy, randomNumber.toString());
+                }
+            break;
+
+        }
 
     }
+
+// =====================================================
+// Template Functions - Do not change anything below this
+// =====================================================
 
     constructor() {
         super();
 
-        this.user_init();
+                // Game Settings that the user fills in.
+        this.gmaeTitle = 'My Game'
+        this.uniqueGameID = 'somerandomidnumber';
+        this.backgroundColor = 0x000000;
+        this.score = 0;
+        this.cash = 0;
+        this.mousePointerFieldIcon = '↖'
+        this.images = [];
+        this.audios = [];
+        this.scripts = [ ];
+        this.externalScripts = [];
+        this.styles = {};
+        this.shopItems = {};
+        this.timeline = [];
+        this.leftSideText = [];
+        this.achievements = [];
 
-
-
-
+        this.user_constructor();
 
         // Non ediatble c
 
@@ -698,143 +828,51 @@ class Example extends Phaser.Scene {
         }
 
         name = name.replace('_', ' ');
-        switch (name) {
-            case 'Restart Timeline':
-                this.timelineRestart();
-                break;
-            case 'Game Over':
-                this.showGameOverScreen();
-                break;
-            case 'You Win':
-                this.showWinScreen();
-                break;
-            case 'Show Scores':
-                this.showHighScores();
-                break;
-            case 'Hide Scores':
-                this.hideHighScores();
-                break;
-            case 'Reset Scores':
-                this.resetHighScores();
-                break;
-            case 'Save Scores':
-                this.saveHighScore();
-                break;
-            case 'Pause':
-                this.pauseGame();
-                break;
-            case 'Up Score':
-                this.score += 100;
-                break;
-            case 'Add Dialog':
-                this.addDialog(params[0], params[1], params[2], params[3]);
-                break;
-            case 'clearDialog':
-                this.clearDialog();
-                break;
-            case 'closeDialog':
-                this.closeDialog();
-                break;
-            case 'Play Music 1':
-                this.playMusic('music1');
-                break;
-            case 'Play Music Intro':
-                this.playMusicWithIntro('intro', 'music2');
-                break;
-            case 'Stop Music':
-                this.pauseMusic();
-                break;
-            case 'Play Sound 2':
-                this.playSound('thunk');
-                break;
-            case 'Stop Sound':
-                this.stopSounds();
-                break;
-            case 'Play Vocal':
-                this.playVocal('voice');
-                break;
-            case 'Stop Vocal':
-                this.pauseVocal();
-                break;
-            case 'Create Bar':
-                this.createValueBar('player', 500, 10, 100, 10, 2000, 0x00ff00, 0xff0000);
-                break;
-            case 'Damage':
-                this.barList.player.value -= 10;
-                break;
-            case 'Heal':
-                this.barList.player.value += 10;
-                break;
-            case 'Destroy Bar':
-                this.destroyValueBar('player');
-                break;
-            case 'addFullPageDialog1':
-                this.addFullPageDialog("On the other score=~score~ hand, we denounce with righteous indignation and dislike men who are so beguiled and demoralized by the charms of pleasure of the moment, so blinded by desire, that they cannot foresee the pain and trouble that are bound to ensue; and equal blame belongs to those who fail in their duty through weakness of will, which is the same as saying through shrinking from toil and pain. These cases are perfectly simple and easy to distinguish. In a free hour, when our power of choice is untrammelled and when nothing prevents our being able to do what we like best, every pleasure is to be welcomed and every pain avoided. But in certain circumstances and owing to the claims of duty or the obligations of business it will frequently occur that pleasures have to be repudiated and annoyances accepted.");
-                break;
-            case 'Skip':
-                this.timelineAdvance();
-                break;
-            case 'show Message':
-                this.showMessage(params[0]);
-                break;
-            case 'Close.Achievements':
-                this.closeAchievements();
-                break;
-            case 'Show Achievements':
-                this.showAchievements();
-                break;
-            case 'Reset Achievements':
-                this.resetAchievements();
-                break;
-            case 'Open Shop':
-                this.openShop();
-                break;
-            case 'Close.Shop':
-                this.closeShop();
-                break;
-            case 'Prev.Shop':
-                this.prevShopPage();
-                break;
-            case 'Next.Shop':
-                this.nextShopPage();
-                break;
-            case 'Prev.Achievement':
-                this.prevAchievementPage();
-                break;
-            case 'Next.Achievement':
-                this.nextAchievementPage();
-                break;
-            case 'buy.shop':
-                this.shopBuy(params[0]);
-                break;
-            case 'Add Cash':
-                this.cash += 100;
-                break;
-            case 'Show Message':
-                this.showMessage('This is a message');
-                break;
-            case 'Open Inventory':
-                this.openInventory();
-                break;
+
+        switch(name){
             case 'Close.Inventory':
                 this.closeInventory();
-                break;
+                return;
+            break;
             case 'Prev.Inventory':
                 this.prevInventoryPage();
-                break;
+                return;
+            break;
             case 'Next.Inventory':
                 this.nextInventoryPage();
-                break;
-            case 'Floating Nums':
-                for (let i = 0; i < 10; i++) {
-                    const randomNumber = Phaser.Math.Between(1, 99);
-                    const randomx = Phaser.Math.Between(200, 600);
-                    const randomy = Phaser.Math.Between(200, 400);
-                    this.addFloatingNumber(randomx, randomy, randomNumber.toString());
-                }
-                break;
-
+                return;
+            break;
+            case 'Close.Shop':
+                this.closeShop();
+                return;
+            break;
+            case 'buy.shop':
+                this.shopBuy(params[0]);
+                return;
+            break;
+            case 'Prev.Shop':
+                this.prevShopPage();
+                return;
+            break;
+            case 'Next.Shop':
+                this.nextShopPage();
+                return;
+            break;
+            case 'Prev.Achievement':
+                this.prevAchievementPage();
+                return;
+            break;
+            case 'Next.Achievement':
+                this.nextAchievementPage();
+                return;
+            break;
+            case 'Close.Achievements':
+                this.closeAchievements();
+                return;
+            break;
         }
+
+        this.user_function_hub(name, params, tarObject);
     }
 
     updateSoundVolume(level = null, tar = null) {
@@ -1107,7 +1145,7 @@ class Example extends Phaser.Scene {
         this.pauseButton.on('pointerdown', this.unPauseGame, this);
     }
 
-    createValueBar(name, x, y, long, thick, depth, barColor, backgroundColor = 0x000000) {
+    createValueBar(name, x, y, long, thick, depth, barColor, backgroundColor = 0x000000, enteractive = false) {
         if (name in this.barList) {
             return;
         }
@@ -1131,6 +1169,10 @@ class Example extends Phaser.Scene {
             long: long,
             interactive: false,
             clicked: false,
+        }
+
+        if(enteractive !== false){
+            this.enableInteractiveBar(name);
         }
     }
 
