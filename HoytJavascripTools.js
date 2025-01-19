@@ -2,6 +2,7 @@ class HoytJavascripTools {
     constructor(){
         // super();
     }
+}
         /*
 
         // ============== User Updatable Content
