@@ -1,5 +1,5 @@
-class HoytJavascripTools
-    constructor() {
+class HoytJavascripTools {
+    constructor(){
         super();
 
         // ============== User Updatable Content
