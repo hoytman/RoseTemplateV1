@@ -1,6 +1,6 @@
 class HoytJavascripTools {
     constructor(){
-        super();
+        // super();
     }
         /*
 
