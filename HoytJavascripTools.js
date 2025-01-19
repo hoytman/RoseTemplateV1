@@ -20,7 +20,7 @@ class HoytJavascripTools {
         this.leftSideText = [];
         this.achievements = [];
 
-        this.user_constructor();
+        //this.user_constructor();
 
         // ============== Internal content.  Not user updatable.
 
@@ -188,7 +188,7 @@ class HoytJavascripTools {
             }
         });
 
-        this.user_create();
+        //this.user_create();
 
         this.created = true;
     }
@@ -254,7 +254,7 @@ class HoytJavascripTools {
             break;
         }
 
-        this.user_function_hub(name, params, tarObject);
+        //this.user_function_hub(name, params, tarObject);
     }
 
     updateSoundVolume(level = null, tar = null) {
@@ -840,7 +840,7 @@ class HoytJavascripTools {
         }
 
         // step code
-        this.user_step();
+        //this.user_step();
 
         this.inStep = false;
     }
