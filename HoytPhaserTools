@@ -1,9 +1,9 @@
 class HoytPhaserTools {
-    constructor(engine){
+    constructor(pha){
 // ===============================================================================================
 // ============================ User Updatable Content ===========================================
 // ===============================================================================================
-        this.gameTitle = 'My Game'
+        this.pha = 'My Game'
         this.uniqueGameID = 'somerandomidnumber';
         this.backgroundColor = 0x000000;
         this.score = 0;
@@ -121,7 +121,6 @@ class HoytPhaserTools {
         this.loadingDiv.style.zIndex = '1000';
         this.loadingDiv.textContent = 'Loading 0%';
         document.body.appendChild(this.loadingDiv);
-
     }
 
     test(){
@@ -141,18 +140,18 @@ class HoytPhaserTools {
         // Load Scripts
         for (let i = 0; i < this.images.length; i++) {
             if (typeof this.images[i] == 'object') {
-                this.load.image(this.images[i][0], this.images[i][1]);
+                this.pha.load.image(this.images[i][0], this.images[i][1]);
             } else {
                 let myUrl = this.images[i];
                 let myName = this.getAssetName(myUrl);
-                this.load.image(myName, myUrl);
+                this.pha.load.image(myName, myUrl);
             }
         }
         for (let i = 0; i < this.audios.length; i++) {
-            this.load.audio(this.audios[i][1], this.audios[i][2]);
+            this.pha.load.audio(this.audios[i][1], this.audios[i][2]);
         }
         for (let i = 0; i < this.scripts.length; i++) {
-            this.load.script(this.scripts[i][0], this.scripts[i][1]);
+            this.pha.load.script(this.scripts[i][0], this.scripts[i][1]);
         }
         for (let i = 0; i < this.externalScripts.length; i++) {
             const script = document.createElement('script');
@@ -162,7 +161,7 @@ class HoytPhaserTools {
         }
 
         // Update Loading alue
-        this.load.on('progress', (progress) => {
+        this.pha.load.on('progress', (progress) => {
             let val = parseInt(progress * 95);
             // Update the loading div content
             this.loadingDiv.textContent = 'Loading ' + val + '%';
