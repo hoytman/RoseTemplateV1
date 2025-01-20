@@ -30,7 +30,6 @@ this.hpt.cash = 0;                    // THe initial money level for the shop.
 this.hpt.images = [];                 // Images for import
 this.hpt.audios = [];                 // Audio for import
 this.hpt.scripts = [];                // Scripts for import
-this.hpt.externalScripts = [];        // Scripts for import.  Uses script tags.
 this.hpt.mousePointerFieldIcon = '↖'  // Icon used for the mouse pointer.
 this.hpt.styles = {};                 // Text Styles
 this.hpt.shopItems = {};              // List of items that can appear in the shop and inventory
@@ -93,39 +92,20 @@ this.hpt.audios = [
 ];
 ```
 
-## Importing Rosebud Scripts
+## Importing Objects (scripts)
 
-- To set up your image imports, set the `scripts` variable in htp.
+- To set up your JSON and/or Class imports, set the `objects` variable in htp.
 - This varable accepts an array, filled with either strings and/or objects
-- If an object is used, it can contain the properties `name` and `url`.
+- If an object is used, it can contain the properties `name`, `assign` and `url`.
 - Objects without `name` properties will have them automatically assigned.
 - If a string is used, it will be regard as url, and the name will be aquired from it.
-  
-```
-this.hpt.images = [
-  'https://play.rosebud.ai/assets/g1.png?xeMF',  // name will be 'g1'
-  'https://play.rosebud.ai/assets/g2.png?xeMF',  // name will be 'g2'
-  'https://play.rosebud.ai/assets/g3.png?xeMF',  // name will be 'g3'
-  {
-    url: 'https://play.rosebud.ai/assets/g4.png?xeMF'  // name will be 'g4'
-  },
-  {
-    name: 'graphic_5',
-    url: 'https://play.rosebud.ai/assets/g5.png?xeMF' 
-  } 
-];
-```
-
-## Importing Data Objects
-
-- To set up your Data Object imports, set the `dataObjects` variable in htp.
-- This varable accepts an array, filled with either strings and/or objects
-- If an object is used, it can contain the properties `name` and `url`.
-- Objects without `name` properties will have them automatically assigned.
-- If a string is used, it will be regard as url, and the name will be aquired from it.
-- The data can be accessd via `window[name]` or `window.name`
--  !! IMPORTANT the name string must equal the variable name used in the file.
--  One variable per file.
+- If JSON data, the data can be accessd via `window[name]` or `window.name`
+  - !! IMPORTANT the name string must equal the variable name used in the file.
+  - Only use the name property if the JSON var name does not match the file name
+  - One variable per file.
+- Use the `assign` property to assign the JSON data to a HoytPhaserTools property (such as styles or shopItems)
+- If a class, the name does not matter.
+- Objects can be created using `new Xyz()` where Xyz is the class name that appears in the file. 
   
 ```
 this.hpt.images = [
@@ -139,5 +119,62 @@ this.hpt.images = [
     url: 'https://some.external.url/my/data/storade/data4.png?xeMF'   // loaded to 'window.myData'
   } 
 ];
+```
+
+## Mouse Pointer
+
+- You can use a character based mouse pointer, which follows the ream mouse pointer.
+- THe current possible valuse are '↖' '◣' and '↘'
+- To disable, do not assign a mouse icon value
+
+```
+this.hpt.mousePointerFieldIcon = '↖';
+```
+
+## Text Styles
+
+- Text styles impact the way that text and buttons are displayed.
+- 
+- It can use generic style options plus a few extras
+  - depth - set the depth
+  - origin - set the pixel origin, based on a key word:
+    - tLeft: [0, 0], Top Left
+    - cLeft: [0, .5], Center Left
+    - bLeft: [0, 1], Bottom Left
+    - tCenter: [0.5, 0], Top Center
+    - cCenter: [0.5, .5], Center Center
+    - bCenter: [0.5, 1], Bottom Center
+    - tRight: [1, 0], Top Right
+    - cRight: [1, .5], Center Right
+    - bRight: [1, 1], Bottom Right
+- and a few extra for buttons only
+  - border1 - Adds an extra border around the background color.  Includes a pixel size and color.
+  - border2 - Adds another extra border around the first border.  Includes a pixel size and color.
+  - downSound - A sound to play when the left mouse button goes down on the button
+  - upSound - A sound to play when the left mouse button goes up on the button
+  - flash - flashed this color (as background) when left mouse button goes down on the button
+
+```
+this.hpt.mousePointerFieldIcon = {
+  gameWonTitle: {
+    fontSize: '64px',
+    fontStyle: 'bold',
+    fill: '#ffffed',
+    stroke: '#000000',
+    strokeThickness: 6,
+    origin: 'tCenter',
+    depth: 1001,
+    backgroundColor: '#000000',
+    align: 'center',
+    padding: {
+        x: 8,
+        y: 3
+    },
+    flash: '#555555',
+    upSound: 'pop',
+    border1: '1 #ffffff',
+    border2: '2 #990000',
+  },
+}
 ```
 
