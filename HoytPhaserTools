@@ -1,9 +1,9 @@
 class HoytPhaserTools {
-    constructor(){
+    constructor(engine){
 // ===============================================================================================
 // ============================ User Updatable Content ===========================================
 // ===============================================================================================
-        this.gmaeTitle = 'My Game'
+        this.gameTitle = 'My Game'
         this.uniqueGameID = 'somerandomidnumber';
         this.backgroundColor = 0x000000;
         this.score = 0;
@@ -22,7 +22,7 @@ class HoytPhaserTools {
 // ===============================================================================================
 // ============================ Internal non-User Updatable Content ==============================
 // ===============================================================================================
-
+        this.engine = engine;
         this.origins = {
             tLeft: [0, 0],
             cLeft: [0, .5],
@@ -127,13 +127,16 @@ class HoytPhaserTools {
     test(){
         return this.gmaeTitle;
     }
-}
-        /*
+
+
+    getAssetName(myUrl){
+        let myName = myUrl.replace("https://play.rosebud.ai/assets/", "");
+        let index = myName.indexOf('.');
+        return myName.substring(0, index);
+    }
 
 
     preload() {
-
-
 
         // Load Scripts
         for (let i = 0; i < this.images.length; i++) {
@@ -141,9 +144,7 @@ class HoytPhaserTools {
                 this.load.image(this.images[i][0], this.images[i][1]);
             } else {
                 let myUrl = this.images[i];
-                let myName = myUrl.replace("https://play.rosebud.ai/assets/", "");
-                let index = myName.indexOf('.');
-                myName = myName.substring(0, index);
+                let myName = this.getAssetName(myUrl);
                 this.load.image(myName, myUrl);
             }
         }
@@ -170,6 +171,9 @@ class HoytPhaserTools {
             }
         });
     }
+
+}
+        /*
 
     create() {
         // Place script vars.
