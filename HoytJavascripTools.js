@@ -2,6 +2,10 @@ class HoytJavascripTools {
     constructor(){
         // super();
     }
+
+    hello(){
+        return 'world';
+    }
 }
         /*
 
