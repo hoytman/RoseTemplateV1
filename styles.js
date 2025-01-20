@@ -1,4 +1,4 @@
-styles = styles = {
+styles = {
             base: {
                 fontFamily: 'Arial',
                 fontSize: 24,
