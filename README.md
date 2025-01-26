@@ -1,4 +1,4 @@
-# Using HoytPhaserTools
+# In intro to HoytPhaserTools
 
 HoytPhaserTools is an object that contains a set of functions that I commonly use in my phaser / Rosebud AI projects.  It Inludes the following:
 
@@ -10,7 +10,15 @@ HoytPhaserTools is an object that contains a set of functions that I commonly us
   - Debug Text
   - Pause Screen
   - Message Popups 
-- function call management.
+- function call management
+- Sound management system
+  - Volumn contols
+  - Music
+  - Sound effects
+  - Vocals
+-  
+
+# Setting up the toolset
 
 ## Include the class
 
@@ -24,17 +32,17 @@ document.head.appendChild(script);
 this.hpt = new HoytPhaserTools(this);
 ```
 
-# List of "must call" functions
+## Functions that need to be intigrated
 
 These functions must be employed in order for the tool set to function.  Place a function call for each in the required places.
 
-## preload()
+### preload()
 
 This needs to be called in Phaser's `preload()` function.  It will:
 - load all of the objects, images and sounds.
 - setup the progress display manaement.
 
-## create()
+### create()
 
 This needs to be called in Phaser's `create()` function.  It will:
 - Assign required imported objects to object properties.
@@ -209,6 +217,10 @@ this.hpt.userFunctions = {
 }
 ```
 
+### Persistant Values
+
+THe system has the ability to load and save 
+
 # Sound Functions
 
 ## Volumn control - updateSoundVolume(level, tar)
@@ -219,10 +231,135 @@ This tool set makes volume control easy.  First, each audio import has a volume 
 - Call with no paramaters to set all sounds to the current volumn.
 - Call with target sound (name) only to set one sound to the current volumn.
 
+## Music
 
+Designed for background music that plays indapendantly of sound effects.  Only one music can play at a time.
+
+### playMusic(tar, restart = false)
+- Pass the name of the music that you want to play.
+- It will pause any other music being played and play this.
+- It will also resume music if it is paused.
+- Passing true to restart will always start the music at the beginning.
+- Music is set to loop
+
+### playMusicWithIntro(intro, main = null, restart = false) {
+- Works just like playMusic() except it plays an intro music, then plays the music.
+- Great for epic music that has should play an intro before the loop starts.
+
+### pauseMusic() 
+- Pauses any music that is being played.
+- Calling pauseMusic() on paused music will reset it to the beginning.
+- Calling playMusic(...) will unpause, and continue.
+
+
+## Vocal / dialog tracks.
+
+Designed for spoken word, which can play along with music.  Only one can play at a time.  No Looping.  Dev Note: vocals are stored in the same internal array as music.
+
+### playVocal(tar, restart = false) 
+- Pass the name of the vocal track that you want to play.
+- It will pause any other vocals being played and play this.
+- It will also resume vocals if it is paused.
+- Passing true to restart will always start the vocals at the beginning.
+- vocals are not set to loop
+
+### pauseVocal()
+- Pauses any vocal that is being played.
+- Calling pauseVocal() on paused vocal will reset it to the beginning.
+- Calling playVocal(...) will unpause, and continue.
+
+## Sound effects
+
+Designed or sound effects that play over and over, and overlap.  Only three instances of a sound are allowed to play at the same time, limiting the painful loud impact of numerous effect playing at once.  SOund effects do not loop
+
+### playSound(tar)
+- plays the target sound effect.
+- Multiple calls will repeat the sound, possibly overlapping.
+- Only three instances of a single sound can play at once.
+
+### stopSounds()
+- Stops all sounds that are playing
+- They can not be resumed.
+
+# Text and Buttons
+
+There are seeral functions that can be used to post text, make text move, make buttons, and create popups and floating text.
+
+## createText(x, y, text, style)
+
+- Very basic text function.  Creates text and places it.
+- Uses the Base style, combines with what ever style is passed.
+- Pass style by name or by object.
+- Text is processed with unToken, allowing game values to be used.
+- The origin is set, using the this.origins values.
+- The text object is returned.
+
+# Helpful screnes and interactive pages
+
+## Pausing
+
+The tools set comes with a basic pause screen.  Calling the pause function will creat it, and set flags that will disable the step event.  Clicking away from the game will automatically pause the game.  TO resume the game, either click on the screen, or call the resume function.  Note: the auto pause feature will only work if `    autoFocus: false,` is not used.
+
+### pauseGame() 
+- pauses the game
+
+### unPauseGame()
+- unpauses the game.
+
+## Titl, win, Lose
+
+### showTitleScreen()
+- Opens a simple title screen with highscore.
+
+### showGameOverScreen()
+- Opens a simple game over screen.
+- Pauses the game
+- Saves and shows Highscores.
+- Hides mouse pointer
+
+### showWinScreen()
+- Opens a simple game over screen.
+- Pauses the game
+- Saves Highscores.
+- Saves and shows Highscores.
+- Hides mouse pointer
+
+## High Score
+The system can save a player's top ten scores and display them using a full screen overlay.  
+
+###  showHighScores()
+- Builds a grop of text fields that can display the current high scores.
+- THe current score (if present) is green
+
+### hideHighScores()
+- Removes the high score text.
+
+### loadHighScores()
+- Gathers the high scores from the browser.
+
+## saveHighScore()
+- Adds the current score to the high score list (if it is high enough)
+
+## resetHighScores()
+- Resets the high scores.
+
+  
+
+# Other Useful Game Making Tools
+
+
+
+## Images
+
+### createIcon(x, y, icon, depth) 
+- Adds an image, with depth and a center center origin.
+
+  
+
+ 
 ## Background functions
 
-## Utilities
+These are functions that are used behind the scenes, but may be useful.
 
 ### setForGroup(target, property, value)
 
@@ -235,7 +372,7 @@ Accepts a url and returns the name of the file at the end, without extension or 
 - Will retunr
 - `g1`
 
-  ### unToken(text, def='---')
+### unToken(text, def='---')
 
 - This function is passed a string.  It will search the string for "tokens" and replace them with values from the game.
 - "Tokens" are designated by ~ like this:
