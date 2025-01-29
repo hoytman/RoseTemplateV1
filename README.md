@@ -162,7 +162,6 @@ this.hpt.images = [
 ## Text Styles
 
 - Text styles impact the way that text and buttons are displayed.
-- 
 - It can use generic style options plus a few extras
   - depth - set the depth
   - origin - set the pixel origin, based on a key word:
@@ -183,7 +182,7 @@ this.hpt.images = [
   - flash - flashed this color (as background) when left mouse button goes down on the button
 
 ```
-this.hpt.mousePointerFieldIcon = {
+this.hpt.styles = {
   gameWonTitle: {
     fontSize: '64px',
     fontStyle: 'bold',
