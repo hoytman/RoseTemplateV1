@@ -17,6 +17,7 @@ styles = {
                 depth: 100,
                 origin: 'cCenter',
                 flash: '#555555',
+                origin: 'cCenter',
                 border1: '1 #ffffff',
             },
             overlayButton: {
