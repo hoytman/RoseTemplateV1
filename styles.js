@@ -17,7 +17,6 @@ styles = {
                 depth: 100,
                 origin: 'cCenter',
                 flash: '#555555',
-                upSound: 'pop',
                 border1: '1 #ffffff',
             },
             overlayButton: {
