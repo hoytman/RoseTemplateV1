@@ -48,7 +48,6 @@ styles = {
                 fill: '#ffffff',
                 origin: 'cCenter',
                 border1: '1 #ffffff',
-                upSound: 'thunk'
             },
             shopButtonBought: {
                 depth: 2001,
@@ -56,7 +55,6 @@ styles = {
                 fill: '#333333',
                 origin: 'cCenter',
                 border1: '1 #ffffff',
-                upSound: 'thunk'
             },
             shopButtonPoor: {
                 depth: 2001,
@@ -64,7 +62,6 @@ styles = {
                 fill: '#ffffff',
                 origin: 'cCenter',
                 border1: '1 #ffffff',
-                upSound: 'thunk'
             },
             shopButtonBuy: {
                 depth: 2001,
