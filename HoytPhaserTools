@@ -3,26 +3,30 @@ class HoytPhaserTools {
 // ===============================================================================================
 // ============================ User Updatable Content ===========================================
 // ===============================================================================================
-        this.pha = 'My Game'
+        this.gameTitle = 'My Game'
         this.uniqueGameID = 'somerandomidnumber';
         this.backgroundColor = 0x000000;
         this.score = 0;
         this.cash = 0;
-        this.mousePointerFieldIcon = '↖'
+        this.mousePointerFieldIcon = '';  // possible valuse are '↖' '◣' and '↘'
+
         this.images = [];
         this.audios = [];
-        this.scripts = [];
-        this.externalScripts = [];
+        this.objects = [];
         this.styles = {};
+        this.userFunctions = {};
         this.shopItems = {};
         this.timeline = [];
         this.leftSideText = [];
         this.achievements = [];
-
+        this.persistentDataKeys = [];
+        this.stepFunctions = [];
+            
 // ===============================================================================================
 // ============================ Internal non-User Updatable Content ==============================
 // ===============================================================================================
-        this.pha = pha;
+        this.pha = pha;  // A link back to the phaser object.  (outer 'this' scope)
+
         this.origins = {
             tLeft: [0, 0],
             cLeft: [0, .5],
@@ -66,7 +70,7 @@ class HoytPhaserTools {
         this.dialogText = [];
         this.dialogImage = [];
         this.fullPageDialog = null;
-        this.floatingNumbers = [];
+        this.floatingText = [];
         this.selfFillText = [];
         this.barList = {};
         this.backdrop = null;
@@ -104,6 +108,10 @@ class HoytPhaserTools {
         this.maxInventoryPage = 1;
         this.borderList = [];
         this.mainButtons = [];
+        this.persistentVarTimer = 0;
+        this.persistentData = {};
+        this.persistentDataOld = {};
+
 
 // ===============================================================================================
 // ============================ Loading Screen ===================================================
@@ -124,64 +132,108 @@ class HoytPhaserTools {
     }
 
     test(){
-        return this.gmaeTitle;
+        return this.gameTitle;
     }
 
-
+    // This function is used to aquire an assets name from an asset url.
+    // It only works on rosebud urls
     getAssetName(myUrl){
-        let myName = myUrl.replace("https://play.rosebud.ai/assets/", "");
+        //let myName = myUrl.replace("https://play.rosebud.ai/assets/", "");
+        let myArr = myUrl.split('/');
+        let myName = myArr.pop();
         let index = myName.indexOf('.');
-        return myName.substring(0, index);
+        if(index != -1){
+             return myName.substring(0, index);
+        }
+        return myName;
+       
     }
-
 
     preload() {
 
         // Load Scripts
+        for (let i = 0; i < this.objects.length; i++) {
+            if (typeof this.objects[i] == 'object') {
+                let myUrl = this.objects[i]['url'];
+                if(!('name' in this.objects[i])){
+                    this.objects[i]['name'] = this.getAssetName(myUrl);
+                }
+            } else {
+                let myUrl = this.objects[i];
+                 this.objects[i] = {
+                    name:   this.getAssetName(myUrl),
+                    url:    myUrl
+                 }
+            }
+            this.pha.load.script(this.objects[i]['name'], this.objects[i]['url']);
+        }
         for (let i = 0; i < this.images.length; i++) {
             if (typeof this.images[i] == 'object') {
-                this.pha.load.image(this.images[i][0], this.images[i][1]);
+                let myUrl = this.images[i]['url'];
+                if(!'name' in this.images[i]){
+                    this.images[i]['name'] = this.getAssetName(myUrl);
+                }
             } else {
                 let myUrl = this.images[i];
-                let myName = this.getAssetName(myUrl);
-                this.pha.load.image(myName, myUrl);
+                 this.images[i] = {
+                    name:   this.getAssetName(myUrl),
+                    url:    myUrl
+                 }
             }
+            this.pha.load.image(this.images[i]['name'], this.images[i]['url']);
         }
         for (let i = 0; i < this.audios.length; i++) {
-            this.pha.load.audio(this.audios[i][1], this.audios[i][2]);
-        }
-        for (let i = 0; i < this.scripts.length; i++) {
-            this.pha.load.script(this.scripts[i][0], this.scripts[i][1]);
-        }
-        for (let i = 0; i < this.externalScripts.length; i++) {
-            const script = document.createElement('script');
-            script.src = this.externalScripts[i] + '?t=' + Date.now();
-            script.async = true; // Optional: Load the script asynchronously
-            document.head.appendChild(script);
+            if (typeof this.audios[i] == 'object') {
+                let myUrl = this.images[i]['url'];
+                if(!'name' in this.audios[i]){
+                    this.audios[i]['name'] = this.getAssetName(myUrl);
+                }
+                if(!'vol' in this.audios[i]){
+                    this.audios[i]['vol'] = 1;
+                }
+            } else {
+                let myUrl = this.audios[i];
+                let myName = this.getAssetName(myUrl);
+                this.audios[i] = {
+                    vol: 1,
+                    name: myName,
+                    url: myUrl,
+                }; 
+            }
+            this.pha.load.audio(this.audios[i]['name'], this.audios[i]['url']);
         }
 
-        // Update Loading alue
+        this.loadPersistentData();
+
+
+        // For scripts that don't come from rosebud.
+        //for (let i = 0; i < this.externalScripts.length; i++) {
+        //    const script = document.createElement('script');
+        //    script.src = this.externalScripts[i] + '?t=' + Date.now();
+        //    script.async = true; // Optional: Load the script asynchronously
+        //    document.head.appendChild(script);
+        //}
+
+        // Update Loading screen value
         this.pha.load.on('progress', (progress) => {
             let val = parseInt(progress * 95);
             // Update the loading div content
             this.loadingDiv.textContent = 'Loading ' + val + '%';
-            if (val == 95) {
+            if (progress == 1) {
                 this.resourcesLoaded = true;
             }
         });
     }
 
-}
-        /*
-
     create() {
-        // Place script vars.
-        for (let i = 0; i < this.scripts.length; i++) {
-            let scriptName = this.scripts[i][0];
-            if (scriptName in window) {
-                this[scriptName] = window[scriptName];
-            } else {
-                console.error(scriptName + ' not loaded from external script!');
+        // This will load data variables from scripts using the script name.
+        
+        for (let i = 0; i < this.objects.length; i++) {
+            
+            let tar = this.objects[i];
+            if('assign' in tar){
+                let scriptName = this.objects[i]['name'];
+                this[tar.assign] = window[scriptName];
             }
         }
 
@@ -190,7 +242,7 @@ class HoytPhaserTools {
         this.createOverlays();
 
         // Setup step event
-        this.time.addEvent({
+        this.pha.time.addEvent({
             delay: 15,
             callback: this.update15ms,
             callbackScope: this,
@@ -199,15 +251,78 @@ class HoytPhaserTools {
 
         // auto pause when user clicks away
         window.addEventListener('blur', () => {
+            console.log('pause')
             if (!this.paused) {
                 this.pauseGame();
             }
         });
 
-        //this.user_create();
-
+        this.loadingDiv.textContent = 'Loading 100%';
         this.created = true;
     }
+
+    // Creates several visoual items for genreral use
+      // Background color
+      // Mouse pointer
+      // Lest-side text field
+      // Translucent overlay
+      // Pause screen
+      // Message Box
+
+    createOverlays() {
+        if(this.backgroundColor !== null){
+            this.background = this.pha.add.rectangle(400, 300, 800, 600, this.backgroundColor);
+            this.background.depth = 0;
+        }
+
+        if(this.mousePointerFieldIcon){
+            // Create Mouse Pointer
+            if (this.mousePointerFieldIcon == '◣') {
+                this.mousePointerField_x = -5;
+                this.mousePointerField_y = -36;
+            } else if (this.mousePointerFieldIcon == '↘') {
+                this.mousePointerField_x = -32;
+                this.mousePointerField_y = -36;
+            } else if (this.mousePointerFieldIcon == '↖') {
+                this.mousePointerField_x = -3;
+                this.mousePointerField_y = -7;
+            }
+
+            this.mousePointerField = this.pha.add.text(-1000, -1000, this.mousePointerFieldIcon, {
+                fontSize: '36px Arial',
+                fill: '#ff0000',
+                fontStyle: 'bold',
+                align: 'center',
+            });
+
+            this.mousePointerField.depth = 1000000000;
+        }
+
+        // Create Text
+        this.leftSideTextField = this.createText(10, 10, 'Not Set');
+
+        // Generic Backdrop
+        this.backdrop = this.pha.add.rectangle(400, 300, 800, 600, 0x000000);
+        this.backdrop.depth = 1000;
+        this.backdrop.alpha = 0;
+
+        // Pause Backdrop with text
+        this.pauseBackground = this.pha.add.rectangle(400, 300, 800, 600, 0x000000);
+        this.pauseBackground.alpha = 0;
+        this.pauseBackground.setInteractive({
+            useHandCursor: true
+        });
+        this.pauseBackground.on('pointerdown', this.unPauseGame, this);
+        this.pauseBackground.setDepth(10000);
+
+        //Message
+        this.messageText = this.createText(780, 20, '', 'messages');
+        this.messageText.fadeMeToGone = 0;
+        this.messageText.alpha = 0;
+
+    }
+
+    // Loops through an object and sets a property on al of its members to a specific value
 
     setForGroup(target, property, value) {
         for (let i = 0; i < target.length; i++) {
@@ -216,16 +331,32 @@ class HoytPhaserTools {
 
     }
 
+    // A collection of functions that can be used by buttons and timelines.
+
     doFunction(name, params, tarObject = null) {
         if (!this.resourcesLoaded || !this.created || this.gameEnded || this.paused) {
             return;
         }
 
-        if (tarObject !== null && tarObject.deactivated) {
+        // Buttons that can not be seen can not be clicked.
+        if (tarObject !== null && tarObject.alpha <= 0) {
             return;
         }
 
         name = name.replace('_', ' ');
+
+        params.push(tarObject);
+
+        Object.entries(this.userFunctions).forEach(([key, entry]) => {
+            if (key == name) {
+                if(typeof entry == 'function'){
+                    entry.apply(null, params);
+                    return;
+                }else{
+                    this[key].apply(this, params);
+                }
+            }
+        });
 
         switch (name) {
             case 'Close.Inventory':
@@ -268,9 +399,10 @@ class HoytPhaserTools {
                 this.closeAchievements();
                 return;
             break;
+            case 'Skip.Dialog':
+                this.closeDialog();
+            break;
         }
-
-        //this.user_function_hub(name, params, tarObject);
     }
 
     updateSoundVolume(level = null, tar = null) {
@@ -280,7 +412,7 @@ class HoytPhaserTools {
             level = 0;
         }
 
-        if (level != this.currentVolume || level === null) {
+        if (level != this.currentVolume || level === null || tar != null) {
             if (level === null) {
                 level = this.currentVolume;
             } else {
@@ -290,10 +422,9 @@ class HoytPhaserTools {
             this.displayVolume = Math.round(this.currentVolume * 100);
 
             for (let i = 0; i < this.audios.length; i++) {
-                if (tar === null || tar == this.audios[i][1]) {
-                    let def = this.audios[i];
-                    let mod = def[0];
-                    let name = def[1];
+                if (tar === null || tar == this.audios[i].name) {
+                    let mod = this.audios[i].vol;
+                    let name = this.audios[i].name;
                     let nameB = name + '~B';
                     let nameC = name + '~C';
 
@@ -315,13 +446,13 @@ class HoytPhaserTools {
 
     playMusicWithIntro(intro, main = null, restart = false) {
         if (main !== null && !(main in this.musicArr)) {
-            this.musicArr[main] = this.sound.add(main);
+            this.musicArr[main] = this.pha.sound.add(main);
             this.musicArr[main].setLoop(true);
             this.updateSoundVolume(null, main);
         }
 
         if (!(intro in this.musicArr)) {
-            this.musicArr[intro] = this.sound.add(intro);
+            this.musicArr[intro] = this.pha.sound.add(intro);
             this.musicArr[intro].setLoop(false);
             this.updateSoundVolume(null, intro);
             if (main !== null) {
@@ -363,7 +494,7 @@ class HoytPhaserTools {
 
     playMusic(tar, restart = false) {
         if (!(tar in this.musicArr)) {
-            this.musicArr[tar] = this.sound.add(tar);
+            this.musicArr[tar] = this.pha.sound.add(tar);
             this.updateSoundVolume(null, tar);
             this.musicArr[tar].setLoop(true);
         }
@@ -403,7 +534,7 @@ class HoytPhaserTools {
 
     playVocal(tar, restart = false) {
         if (!(tar in this.musicArr)) {
-            this.musicArr[tar] = this.sound.add(tar);
+            this.musicArr[tar] = this.pha.sound.add(tar);
             this.updateSoundVolume(null, tar);
             this.musicArr[tar].setLoop(false);
         }
@@ -439,15 +570,16 @@ class HoytPhaserTools {
         }
     }
 
+
     playSound(tar) {
         let sound1 = tar;
         let sound2 = tar + '~B';
         let sound3 = tar + '~C';
         if (!(sound1 in this.soundArr)) {
             // Initiate sound
-            this.soundArr[sound1] = this.sound.add(tar);
-            this.soundArr[sound2] = this.sound.add(tar);
-            this.soundArr[sound3] = this.sound.add(tar);
+            this.soundArr[sound1] = this.pha.sound.add(tar);
+            this.soundArr[sound2] = this.pha.sound.add(tar);
+            this.soundArr[sound3] = this.pha.sound.add(tar);
             this.updateSoundVolume(null, tar);
         }
         if (this.soundArr[sound1].isPlaying) {
@@ -482,56 +614,6 @@ class HoytPhaserTools {
         });
     }
 
-    createOverlays() {
-
-        this.background = this.add.rectangle(400, 300, 800, 600, this.backgroundColor);
-        this.background.depth = 0;
-
-        // Create Mouse Pointer
-        if (this.mousePointerFieldIcon == '◣') {
-            this.mousePointerField_x = -5;
-            this.mousePointerField_y = -36;
-        } else if (this.mousePointerFieldIcon == '↘') {
-            this.mousePointerField_x = -32;
-            this.mousePointerField_y = -36;
-        } else if (this.mousePointerFieldIcon == '↖') {
-            this.mousePointerField_x = -3;
-            this.mousePointerField_y = -7;
-        }
-
-        this.mousePointerField = this.add.text(-1000, -1000, this.mousePointerFieldIcon, {
-            fontSize: '36px Arial',
-            fill: '#ff0000',
-            fontStyle: 'bold',
-            align: 'center',
-        });
-
-        this.mousePointerField.depth = 1000000000;
-
-        // Create Text
-        this.leftSideTextField = this.createText(10, 10, 'Not Set');
-
-        // Generic Backdrop
-        this.backdrop = this.add.rectangle(400, 300, 800, 600, 0x000000);
-        this.backdrop.depth = 1000;
-        this.backdrop.alpha = 0;
-
-        // Pause Backdrop with text
-        this.pauseBackground = this.add.rectangle(400, 300, 800, 600, 0x000000);
-        this.pauseBackground.alpha = 0;
-        this.pauseBackground.setInteractive({
-            useHandCursor: true
-        });
-        this.pauseBackground.on('pointerdown', this.unPauseGame, this);
-        this.pauseBackground.setDepth(10000);
-
-        //Message
-        this.messageText = this.createText(780, 20, '', 'messages');
-        this.messageText.fadeMeToGone = 0;
-        this.messageText.alpha = 0;
-
-    }
-
     unPauseGame() {
         this.paused = false;
         this.pauseBackground.alpha = 0;
@@ -546,16 +628,17 @@ class HoytPhaserTools {
         this.pauseButton.on('pointerdown', this.unPauseGame, this);
     }
 
+
     createValueBar(name, x, y, long, thick, depth, barColor, backgroundColor = 0x000000, enteractive = false) {
         if (name in this.barList) {
             return;
         }
 
-        let valueBarBackground = this.add.rectangle(x, y, long, thick, backgroundColor);
+        let valueBarBackground = this.pha.add.rectangle(x, y, long, thick, backgroundColor);
         valueBarBackground.setOrigin(0, 0);
         valueBarBackground.setDepth(depth);
 
-        let valueBar = this.add.rectangle(x, y, long, thick, barColor);
+        let valueBar = this.pha.add.rectangle(x, y, long, thick, barColor);
         valueBar.setOrigin(0, 0);
         valueBar.setDepth(depth + 1);
 
@@ -602,11 +685,11 @@ class HoytPhaserTools {
         }
 
         if (this.barList[key].clicked) {
-            let rawValue = (this.input.mousePointer.x - this.barList[key].x) /
+            let rawValue = (this.pha.input.mousePointer.x - this.barList[key].x) /
                 this.barList[key].long;
             this.barList[key].value = rawValue * this.barList[key].max;
 
-            if (!this.input.mousePointer.buttons) {
+            if (!this.pha.input.mousePointer.buttons) {
                 this.barList[key].clicked = false;
             }
         }
@@ -685,6 +768,7 @@ class HoytPhaserTools {
         }
     }
 
+
     updateTextDisplays() {
         let myText = '';
 
@@ -695,10 +779,10 @@ class HoytPhaserTools {
         this.leftSideTextField.setText(myText);
 
         // Floating Numbers
-        if (this.floatingNumbers.length > 0) {
+        if (this.floatingText.length > 0) {
             let newList = [];
-            for (let i = 0; i < this.floatingNumbers.length; i++) {
-                let tar = this.floatingNumbers[i];
+            for (let i = 0; i < this.floatingText.length; i++) {
+                let tar = this.floatingText[i];
                 if (tar.destroyStep <= this.stepCount) {
                     tar.destroy();
                 } else {
@@ -706,7 +790,7 @@ class HoytPhaserTools {
                     newList.push(tar);
                 }
             }
-            this.floatingNumbers = newList;
+            this.floatingText = newList;
         }
 
         // Text Filler
@@ -752,21 +836,44 @@ class HoytPhaserTools {
         this.selfFillText.push(myField);
     }
 
-
-
     update15ms() {
-        if (!this.resourcesLoaded || !this.created || this.inStep || this.gameEnded || this.paused) {
-            return;
+        // Remove the loading div if it exists
+        if (this.loadingDiv) {
+            document.body.removeChild(this.loadingDiv);
+            this.loadingDiv = null;
         }
-        this.actualTime = Date.now();
-        //message Fade
 
+        // Skip if any of these flags are set
+        if (!this.resourcesLoaded || !this.created || this.inStep || this.gameEnded || this.paused) {
+            return false;
+        }
+
+        this.inStep = true;
+        this.stepDuration = this.actualTime - this.lastStepsTime;
+        this.lastStepsTime = this.actualTime;
+        this.actualTime = Date.now();
+        this.runTime += this.stepDuration;
+        this.stepCount++;
+
+        this.updateTextDisplays();
+
+        this.evalAchievements();
+
+        // Save Persistant values every second.
+        if(this.persistentVarTimer < 0){
+            this.persistentVarTimer = 1000;
+            this.savePersistentVars();
+        }else{
+            this.persistentVarTimer -= this.stepDuration;
+        }
+        
         // Check volume
         if ('volume' in this.barList) {
             let newVolume = this.barList['volume'].value;
             this.updateSoundVolume(newVolume);
         }
 
+        // Mannage popup messages.
         if (this.messageText.fadeMeToGone > 0) {
             this.messageText.fadeMeToGone--;
             this.messageText.y -= .3;
@@ -785,41 +892,23 @@ class HoytPhaserTools {
             }
         }
 
-        this.mousePointerField.x = this.input.mousePointer.x + this.mousePointerField_x;
-        this.mousePointerField.y = this.input.mousePointer.y + this.mousePointerField_y;
-        if (this.actualTime % 400 > 200) {
-            this.mousePointerField.setColor('#ffffff');
-        } else {
-            this.mousePointerField.setColor('#ff0000');
+        // Update dynamic mouse pointer
+        if(this.mousePointerField){
+            this.mousePointerField.x = this.pha.input.mousePointer.x + this.mousePointerField_x;
+            this.mousePointerField.y = this.pha.input.mousePointer.y + this.mousePointerField_y;
+            if (this.actualTime % 400 > 200) {
+                this.mousePointerField.setColor('#ffffff');
+            } else {
+                this.mousePointerField.setColor('#ff0000');
+            }
         }
-
-        if (this.pausedWMouse) {
-            this.setForGroup(this.mainButtons, 'deactivated', true);
-            return;
-        }
-        this.setForGroup(this.mainButtons, 'deactivated', false);
-
-
-        // Remove the loading div if it exists
-        if (this.loadingDiv) {
-            document.body.removeChild(this.loadingDiv);
-            this.loadingDiv = null;
-        }
-
-        this.inStep = true;
-        this.stepDuration = this.actualTime - this.lastStepsTime;
-        this.lastStepsTime = this.actualTime;
-        this.runTime += this.stepDuration;
-        this.stepCount++;
-
-        this.updateTextDisplays();
-        this.evalAchievements();
 
         // display all health values
         Object.keys(this.barList).forEach(key => {
             this.updateValueBar(key);
         });
 
+        // RUn Timeline
         if (!this.timelinePaused) {
             this.timelineTime += this.stepDuration;
             if (this.timelineDeadline === null || this.timelineDeadline > this.timelineTime) {
@@ -855,16 +944,21 @@ class HoytPhaserTools {
             }
         }
 
-        // step code
-        //this.user_step();
-
+        for(let i = 0; i < this.stepFunctions.length; i++){
+            this.stepFunctions[i]();
+        }
+        
         this.inStep = false;
     }
 
-    addFloatingNumber(x, y, text, text_color = '#ff0000', depth = 999) {
-        let myText = this.createText(x, y, text, 'floatingText');
+    addFloatingNumber(x, y, text, style='floatingText'){
+        this.addFloatingText(x, y, text);
+    }
+
+    addFloatingText(x, y, text, style='floatingText') {
+        let myText = this.createText(x, y, text, style);
         myText.destroyStep = this.stepCount + 30;
-        this.floatingNumbers.push(myText);
+        this.floatingText.push(myText);
     }
 
     timelineDoFunctions() {
@@ -913,7 +1007,7 @@ class HoytPhaserTools {
         }
     }
 
-    addBorder(button, def) {
+    addBorder(button, def, origin) {
 
         let defArr = def.split(' ');
 
@@ -924,7 +1018,9 @@ class HoytPhaserTools {
             color = color.replace('#', '0x');
         }
 
-        let obj = this.add.rectangle(
+        
+
+        let obj = this.pha.add.rectangle(
             button.x, button.y,
             button.width + size, button.height + size,
             color
@@ -973,7 +1069,7 @@ class HoytPhaserTools {
             };
         }
 
-        let button = this.add.text(
+        let button = this.pha.add.text(
             x,
             y,
             visualText,
@@ -986,14 +1082,14 @@ class HoytPhaserTools {
         button.deactivated = false;
 
         if ('border2' in myStyle) {
-            button.myBorder2 = this.addBorder(button, myStyle.border2);
+            button.myBorder2 = this.addBorder(button, myStyle.border2, myStyle.origin);
             button.on('destroy', () => {
                 button.myBorder2.destroy();
             });
         }
 
         if ('border1' in myStyle) {
-            button.myBorder1 = this.addBorder(button, myStyle.border1);
+            button.myBorder1 = this.addBorder(button, myStyle.border1, myStyle.origin);
             button.on('destroy', () => {
                 button.myBorder1.destroy();
             });
@@ -1001,7 +1097,7 @@ class HoytPhaserTools {
 
         // Add pointer down effect
         button.on('pointerdown', () => {
-            if (button.deactivated) {
+            if (button.alpha <= 0) {
                 return;
             }
             if ('downSound' in button.myOriginalStyle) {
@@ -1014,7 +1110,7 @@ class HoytPhaserTools {
 
         // Add pointer up effect
         button.on('pointerup', () => {
-            if (button.deactivated) {
+            if (button.alpha <= 0) {
                 return;
             }
             if ('upSound' in button.myOriginalStyle) {
@@ -1039,8 +1135,10 @@ class HoytPhaserTools {
         return button;
     }
 
+
+
     createText(x, y, text, style) {
-        text = this.unToken(text);
+        text = this.unToken(text+'');
 
         let myStyle = null;
         if (typeof style == 'string') {
@@ -1068,25 +1166,29 @@ class HoytPhaserTools {
             };
         }
 
-        let button = this.add.text(
+        let myText = this.pha.add.text(
             x,
             y,
             text,
             myStyle
         );
 
-        button.setOrigin(this.origins[myStyle.origin][0], this.origins[myStyle.origin][1]);
-        button.setDepth(myStyle.depth);
+        myText.setOrigin(this.origins[myStyle.origin][0], this.origins[myStyle.origin][1]);
+        myText.setDepth(myStyle.depth);
 
-        return button;
+        return myText;
     }
 
+    
+
     createIcon(x, y, icon, depth) {
-        let myIcon = this.add.image(x, y, icon);
+        let myIcon = this.pha.add.image(x, y, icon);
         myIcon.setDepth(depth);
         myIcon.setOrigin(.5, .5);
         return myIcon;
     }
+
+
 
     showTitleScreen() {
 
@@ -1099,8 +1201,10 @@ class HoytPhaserTools {
 
     showGameOverScreen() {
         this.gameEnded = true;
-        this.mousePointerField.alpha = 0;
         this.saveHighScore();
+        if(this.mousePointerField){
+            this.mousePointerField.alpha = 0;
+        }
 
         this.backdrop.alpha = 0.9;
 
@@ -1113,7 +1217,9 @@ class HoytPhaserTools {
 
     showWinScreen() {
         this.gameEnded = true;
-        this.mousePointerField.alpha = 0;
+        if(this.mousePointerField){
+            this.mousePointerField.alpha = 0;
+        }
         this.saveHighScore();
 
         this.backdrop.alpha = 0.9;
@@ -1125,7 +1231,7 @@ class HoytPhaserTools {
     }
 
     // ====================== High Score
-
+    
     showHighScores() {
 
         this.hideHighScores();
@@ -1179,12 +1285,82 @@ class HoytPhaserTools {
         const highScores = this.loadHighScores();
         highScores.push(this.score);
         highScores.sort((a, b) => b - a);
-        console.log(highScores);
         localStorage.setItem(this.uniqueGameID + '_highScores', JSON.stringify(highScores.slice(0, 10)));
     }
 
     resetHighScores() {
         localStorage.setItem(this.uniqueGameID + '_highScores', JSON.stringify([]));
+    }
+
+    // ============= Persistent Vars
+
+    savePersistentVars(){
+        if(this.persistentDataKeys.length < 1){
+            return;
+        }
+
+        let doSave = false;
+        let saveVals = {};
+
+        for(let i = 0; i < this.persistentDataKeys.length; i++){
+            let key = this.persistentDataKeys[i];
+            let pastValue = null;
+            let nowValue = null;
+            
+            if(key in this.persistentDataOld){
+                pastValue = this.persistentDataOld[key];
+            }else{
+                this.persistentDataOld[key] = null;
+            }
+
+            if(key in this){
+                nowValue = this[key];
+            }else{
+                this[key] = null;
+            }
+
+            saveVals[key] = nowValue;
+
+            if(pastValue != nowValue){
+                doSave = true;
+                this.persistentDataOld[key] = nowValue;
+            }
+        }
+        if(doSave){
+            localStorage.setItem(this.uniqueGameID + '_persistentVars', JSON.stringify(saveVals));
+        }
+    }
+
+    loadPersistentData(){
+        if(this.persistentDataKeys.length < 1){
+            return;
+        }
+        for(let i = 0; i < this.persistentDataKeys.length; i++){
+            let key = this.persistentDataKeys[i];
+            this[key] = null;
+            this.persistentDataOld[key] = null;
+        }
+        let saveData = JSON.parse(localStorage.getItem(this.uniqueGameID + '_persistentVars')) || null;
+        if(saveData === null){
+            saveData = this.resetPersistentData();
+        }else{
+            Object.entries(saveData).forEach(([key, entry]) => {
+                this[key] = entry;
+                this.persistentDataOld[key] = entry;
+            });
+        }
+    }
+
+    resetPersistentData(){
+        let myData = {};
+        for(let i = 0; i < this.persistentDataKeys; i++){
+            let key = this.persistentDataKeys[i];
+            myData[key] = null;
+            this[key] = null;
+            this.persistentDataOld[key] = null;
+        }
+        localStorage.setItem(this.uniqueGameID + '_persistentVars', JSON.stringify(myData));
+        return myData;
     }
 
     // ========= Achievements
@@ -1207,6 +1383,7 @@ class HoytPhaserTools {
         }
     }
 
+  
     showAchievements() {
         this.backdrop.alpha = 1;
         this.pausedWMouse = true;
@@ -1342,7 +1519,6 @@ class HoytPhaserTools {
         this.pausedWMouse = true;
 
         this.titleField = this.createText(400, 15, 'Shop : $' + this.cash, 'overlayTitle');
-
         this.backButton = this.createButton(100, 15, "Close.Shop", 'overlayControl');
 
         let vertInd = 0
@@ -1363,10 +1539,11 @@ class HoytPhaserTools {
             }
             if (entry.page == this.shopPageNum) {
                 if (entry.type == 'title') {
-                    this.shopTextFields[i] = this.createText(400, 60 + 38 * vertInd, myText, 'OverlaySubTitle');
+                    this.shopTextFields[i] = this.createText(400, 60 + 38 * vertInd, myText, 'overlaySubTitle');
                     vertInd += 2;
                 } else if (entry.type == 'subtitle') {
-                    this.shopTextFields[i] = this.createText(400, 26 + 38 * vertInd, myText, 'OverlaySubSubTitle');
+                    this.shopTextFields[i] = this.createText(400, 26 + 38 * vertInd, myText, 'overlaySubSubTitle');
+                    console.log(this.shopTextFields[i]);
                     vertInd++;
                 } else {
 
@@ -1714,10 +1891,7 @@ class HoytPhaserTools {
         this.pausedWMouse = false;
     }
 
-
-
     // ========================= 
-
 
     doOnce(tag) {
         if (this.completed.includes(tag)) {
@@ -1746,7 +1920,7 @@ class HoytPhaserTools {
         return segments.join('\n');
     }
 
-    addDialog(ind, image, color, text) {
+    addDialog(ind, image=null, color=0xffffff, text) {
         this.backdrop.alpha = 1;
         text = this.linewrapString(this.unToken(text), 36);
 
@@ -1754,21 +1928,21 @@ class HoytPhaserTools {
         let indX = 600 * (ind % 2)
 
         if (color !== null || color !== 'null') {
-            this.dialogBox1[ind] = this.add.rectangle(indX + 100, indY + 100, 100, 100, 0xffffff);
-            this.dialogBox2[ind] = this.add.rectangle(indX + 100, indY + 100, 96, 96, color);
+            this.dialogBox1[ind] = this.pha.add.rectangle(indX + 100, indY + 100, 100, 100, 0xffffff);
+            this.dialogBox2[ind] = this.pha.add.rectangle(indX + 100, indY + 100, 96, 96, color);
             this.dialogBox1[ind].depth = 1002;
             this.dialogBox2[ind].depth = 1003;
         } else {
-            this.dialogBox1[ind] = {};
-            this.dialogBox2[ind] = {};
+            this.dialogBox1[ind] = null;
+            this.dialogBox2[ind] = null;
         }
 
-        if (image !== null || image !== 'null') {
-            this.dialogImage[ind] = this.add.image(indX + 100, indY + 100, image);
+        if (image !== null && image !== 'null') {
+            this.dialogImage[ind] = this.pha.add.image(indX + 100, indY + 100, image);
             this.dialogImage[ind].depth = 1004;
             this.dialogImage[ind].setOrigin(0.5, 0.5);
         } else {
-            this.dialogImage[ind] = {};
+            this.dialogImage[ind] = null;
         }
 
         this.dialogText[ind] = this.createText(400, 50 + indY, text, 'overlayTextCentered');
@@ -1778,12 +1952,12 @@ class HoytPhaserTools {
         this.makeTextSelfFill(this.dialogText[ind]);
 
         if (this.skipButton == null) {
-            this.skipButton = this.createButton(700, 580, 'Skip', 'overlayControl');
+            this.skipButton = this.createButton(700, 580, 'Skip.Dialog', 'overlayControl');
         }
 
     }
 
-    unToken(text) {
+    unToken(text, def='---') {
         let textArr = text.split('~');
         let newText = '';
         for (let i = 0; i < textArr.length; i++) {
@@ -1814,12 +1988,13 @@ class HoytPhaserTools {
                 ) {
                     newText = newText + this[myPath[0]][myPath[1]][myPath[2]][myPath[3]];
                 } else {
-                    newText = newText + '---';
+                    newText = newText + def;
                 }
             }
         }
         return newText;
     }
+
 
     addFullPageDialog(text) {
         this.backdrop.alpha = 1;
@@ -1828,12 +2003,11 @@ class HoytPhaserTools {
         this.makeTextSelfFill(this.fullPageDialog, text);
 
         if (this.skipButton == null) {
-            this.skipButton = this.createButton(700, 580, 'Skip', 'overlayControl');
+            this.skipButton = this.createButton(700, 580, 'Skip.Dialog', 'overlayControl');
         }
     }
-
+    
     clearDialog(ind = null) {
-
         if (this.fullPageDialog != null) {
             this.fullPageDialog.destroy();
             this.fullPageDialog = null;
@@ -1842,15 +2016,23 @@ class HoytPhaserTools {
                 this.clearDialog(i);
             }
         } else {
-            this.dialogText[ind].destroy();
-            this.dialogBox1[ind].destroy();
-            this.dialogBox2[ind].destroy();
-            this.dialogImage[ind].destroy();
+            if(this.dialogText[ind]){
+                this.dialogText[ind].destroy();
+            }
+            if(this.dialogBox1[ind]){
+                this.dialogBox1[ind].destroy();
+            }
+            if(this.dialogBox2[ind]){
+                this.dialogBox2[ind].destroy();
+            }
+            if(this.dialogImage[ind]){
+                this.dialogImage[ind].destroy();
+            }
         }
     }
 
-    closeDialog(ind = null) {
-        this.clearDialog(ind);
+    closeDialog() {
+        this.clearDialog();
         this.backdrop.alpha = 0;
         this.skipButton.destroy();
         this.skipButton = null;
@@ -1868,4 +2050,3 @@ class HoytPhaserTools {
     }
 
 }
-*/
