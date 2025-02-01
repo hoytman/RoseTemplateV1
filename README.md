@@ -16,7 +16,6 @@ HoytPhaserTools is an object that contains a set of functions that I commonly us
   - Music
   - Sound effects
   - Vocals
--  
 
 # Setting up the toolset
 
@@ -58,24 +57,24 @@ This needs to be called in Phaser's `create()` function.  It will:
 the following object properties can be set by the user in order to customise the experence.  the first 6 are easy to understand, but the following data structures are more complex and can have deep impacts on you game.  they will be described in detail below.
 
 ```
-this.hpt.gameTitle = 'My Game'        // the name of you game.  Used in various locations
-this.hpt.uniqueGameID = 'as6w';       // Unique id used to load and update save data.
-this.hpt.backgroundColor = 0x000000;  // the color used for the background.  TO disable, don't set.
-this.hpt.score = 0;                   // the initial score.  Used for debuging andd testing
-this.hpt.cash = 0;                    // the initial money level for the shop.
-this.hpt.mousePointerFieldIcon = '↖'  // Icon used for the mouse pointer.  '↖' '◣', '↘' or '' for none. 
+this.gameTitle = 'My Game'
+this.uniqueGameID = 'somerandomidnumber';
+this.backgroundColor = 0x000000;
+this.score = 0;
+this.cash = 0;
+this.mousePointerFieldIcon = '';  // possible values  ▼ ⬇ ↖ ◣ ↘ or '' for nothing
 
-this.hpt.images = [];                 // Images for import
-this.hpt.audios = [];                 // Audio for import
-this.hpt.objects = [];                // Scripts for import
-this.hpt.styles = {};                 // Text Styles
+this.images = [];
+this.audios = [];
+this.objects = [];
+this.styles = {};
 this.userFunctions = {};
-this.hpt.shopItems = {};              // List of items that can appear in the shop and inventory
-this.hpt.timeline = [];               // Timeline elements for use in events and cut scenes.
-this.hpt.leftSideText = [];           // the text and data that will appear in the left corner
-this.hpt.achievements = [];           // Achievements that can be earned.
-this.persistentDataKeys = [];         // A list of persistant data that will be saed to the browser cacsh
-this.stepFunctions = [];              // Functions that wil be performed every step
+this.shopItems = {};
+this.timeline = [];
+this.leftSideText = [];
+this.achievements = [];
+this.persistentDataKeys = [];
+this.stepFunctions = [];
 ```
 
 ## Importing Images
@@ -164,7 +163,7 @@ this.hpt.images = [
 ## Text Styles
 
 - Text styles impact the way that text and buttons are displayed.
-- 
+- Parent: inherits all styles from its parent.  These can chain, and can be overrwitten. 
 - It can use generic style options plus a few extras
   - depth - set the depth
   - origin - set the pixel origin, based on a key word:
@@ -187,6 +186,7 @@ this.hpt.images = [
 ```
 this.hpt.mousePointerFieldIcon = {
   gameWonTitle: {
+    parent: 'base'
     fontSize: '64px',
     fontStyle: 'bold',
     fill: '#ffffed',
@@ -218,21 +218,36 @@ this.hpt.userFunctions = {
     }
 }
 ```
+Note: if an exact name is passed to the function, which should only call the function, simply add this to the array:
+```
+this.hpt.userFunctions = {
+    openStore:null,
+}
+```
 
 ## Persistent Values
 
 - the system has the ability to load and save persistat data to the browser for use in game.
 - This is a great way to track long-lerm achevements
-- Values are stored in a var called PersistentData.
+- Values are stored directly in the tool object.
+  - There may be var name overlaps, with mysterious effects.  
 - Changes to attributes in this object are stored every second.
 - This data is also loaded at the beginning of every game.
 - To Use.
   - In the constructor, Set the `PersistentDataKeys` array so it contains the properties to manage.
-  - Change the data in PersistentData as needed
+  - Change the data as needed.
+  - All datas are given the value `null` to start.
+- You can force a save, load or reset using the following functions:
+  - `savePersistentVars()`
+  - `loadPersistentData()`
+  - `resetPersistentData()`
+  
 
 ## stepFunctions
 - Add functions to this array.
 - Each function will be performed during each step.
+
+  
 
 
 # Sound Functions
@@ -299,10 +314,11 @@ Designed or sound effects that play over and over, and overlap.  Only three inst
 
 there are seeral functions that can be used to post text, make text move, make buttons, and create popups and floating text.
 
-## createText(x, y, text, style)
+## createText(x, y, text='', style=null)
 
 - Very basic text function.  Creates text and places it.
-- Uses the Base style, combines with what ever style is passed.
+- Uses the style as object, json string, or style name.
+- style=null will use `this.global.style`
 - Pass style by name or by object.
 - Text is processed with unToken, allowing game values to be used.
 - the origin is set, using the this.origins values.
@@ -311,6 +327,8 @@ there are seeral functions that can be used to post text, make text move, make b
 ## createButton(x, y, text, style)
 
 - Very similar to createText() except it places and returns an interactive button.
+- Uses the style as object, json string, or style name.
+- style=null will use `this.global.style`
 - Add a do-able function with the same name as the button to `userFunctions`
 - When naming buttons, add a '.' to add a subtitle.
   - Subtitles will not be visible on the button
@@ -487,9 +505,11 @@ the tools set comes with a basic pause screen.  Calling the pause function will 
     - P3: the numeric amount.
 - icon: a visual icon that wil appear near the item's text.
  
+### openShop()
+- Opens the shop view, whihc allows you to buy inventory items.
 
-
-
+### openInventory()
+- Opens an inventory page, that shows all of the items that you have bought.
 
 
 ## High Score
@@ -520,6 +540,33 @@ the system can save a player's top ten scores and display them using a full scre
 ### createIcon(x, y, icon, depth) 
 - Adds an image, with depth and a center center origin.
 
+## Bars
+
+### createValueBar(name, x, y, long, thick, depth, barColor, backgroundColor = 0x000000, enteractive = false) 
+- creates a horizontal value bar at the specified location.
+- It grows and shrinks betwen 0 and 100.
+- If interactive, the bar becomes a slider which the player can interact with using the mouse.
+
+### destroyValueBar(name)
+- Destroys a value bar.
+
+### updateValueBar(key, value = null, max = null)
+- Sets that value of a bar.
+- pass the key (name) and the value.
+- Setting the max value will change how valus are shown.
+
+### addValueBarTextField(name, field, title = '', rounding = 0, multiplier = 1, suffix = '') 
+- Attaches a text field to the bar which will show it's value.
+- The title is a prefix which will be added to the value.
+- Rounding: the number of decimal places that are shown.
+  - 0 = 10
+  - 1 = 10.1
+  - 2 = 10.11
+- multiplier: Multiplies the displayed value by this number.
+- suffix: This text is added to the end of the value.  Great for units (lbs, points, etc.)
+
+### placeValueBar(x,y,name)
+- Moves all of the value bar elements to a new position.
   
 ## Background functions
 
