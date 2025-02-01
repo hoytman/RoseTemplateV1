@@ -8,7 +8,7 @@ class HoytPhaserTools {
         this.backgroundColor = 0x000000;
         this.score = 0;
         this.cash = 0;
-        this.mousePointerFieldIcon = '';  // possible valuse are '↖' '◣' and '↘'
+        this.mousePointerFieldIcon = '';  // possible values  ▼ ⬇ ↖ ◣ ↘ or '' for nothing
 
         this.images = [];
         this.audios = [];
@@ -59,6 +59,7 @@ class HoytPhaserTools {
         this.timelineDeadline = -1;
 
         // Game Assets
+        this.globalStyle = 'base';
         this.currentVolume = 1;
         this.displayVolume = 100;
         this.loadingDiv = null; // Add this line to store the div reference
@@ -106,7 +107,6 @@ class HoytPhaserTools {
         this.inventoryCount = 0;
         this.inventoryPage = 1;
         this.maxInventoryPage = 1;
-        this.borderList = [];
         this.mainButtons = [];
         this.persistentVarTimer = 0;
         this.persistentData = {};
@@ -286,6 +286,12 @@ class HoytPhaserTools {
             } else if (this.mousePointerFieldIcon == '↖') {
                 this.mousePointerField_x = -3;
                 this.mousePointerField_y = -7;
+            }else if (this.mousePointerFieldIcon == '▼') {
+                this.mousePointerField_x = -18;
+                this.mousePointerField_y = -35;
+            }else if (this.mousePointerFieldIcon == '⬇') {
+                this.mousePointerField_x = -17;
+                this.mousePointerField_y = -38;
             }
 
             this.mousePointerField = this.pha.add.text(-1000, -1000, this.mousePointerFieldIcon, {
@@ -328,7 +334,6 @@ class HoytPhaserTools {
         for (let i = 0; i < target.length; i++) {
             target[i][property] = value;
         }
-
     }
 
     // A collection of functions that can be used by buttons and timelines.
@@ -1018,10 +1023,52 @@ class HoytPhaserTools {
             color = color.replace('#', '0x');
         }
 
-        
+        let xOffset = 0;
+        let yOffset = 0;
+        let halfWidth = button.width/2;
+        let halfHeight = button.height/2;
+
+        switch(origin){
+            case 'tLeft': //[0, 0],
+                xOffset = halfWidth;
+                yOffset = halfHeight;
+            break;
+            case 'cLeft': //[0, .5],
+                xOffset = halfWidth;
+                yOffset = 0;
+            break;
+            case 'bLeft': //[0, 1],
+                xOffset = halfWidth;
+                yOffset = -halfHeight;
+            break;
+            case 'tCenter': //[0.5, 0],
+                xOffset = 0;
+                yOffset = halfHeight;
+            break;
+            case 'cCenter': //[0.5, .5],
+                xOffset = 0;
+                yOffset = 0;
+            break;
+            case 'bCenter': //[0.5, 1],
+                xOffset = 0;
+                yOffset = -halfHeight;
+            break;
+            case 'tRight': //[1, 0],
+                xOffset = -halfWidth;
+                yOffset = halfHeight;
+            break;
+            case 'cRight': //[1, .5],
+                xOffset = -halfWidth;
+                yOffset = 0;
+            break;
+            case 'bRight': //[1, 1],
+                xOffset = -halfWidth;
+                yOffset = -halfHeight;
+            break;
+        }
 
         let obj = this.pha.add.rectangle(
-            button.x, button.y,
+            button.x+xOffset, button.y+yOffset,
             button.width + size, button.height + size,
             color
         );
@@ -1033,41 +1080,44 @@ class HoytPhaserTools {
         return obj;
     }
 
-    createButton(x, y, text, style) {
+    compileStyles(style){
+
+        let myStyle = null;
+
+        if(style == null){
+            style = this.globalStyle;
+        }
+
+        if (typeof style == 'string') {
+            if (style in this.styles) {
+                myStyle = this.styles[style];
+            }else{
+                myStyle = JSON.parse(style);
+            }
+        }else{
+            myStyle = style;
+        }
+
+        if('parent' in myStyle){
+            let parentStyle = this.compileStyles(myStyle.parent);
+            myStyle =  { ...parentStyle, ...myStyle };
+
+        }
+
+        return myStyle;
+    }
+
+    setStyle(style){
+        this.globalStyle = style;
+    }
+
+    createButton(x, y, text='', style=null) {
         let textArr = text.split('|');
         let visualText = textArr[0].split('.')[0];
 
         visualText = this.unToken(visualText);
 
-        let myStyle = null;
-        if (typeof style == 'string') {
-            if (style in this.styles) {
-                myStyle = {
-                    ...this.styles.base,
-                    ...this.styles.button,
-                    ...this.styles[style]
-                };
-            } else {
-                myStyle = {
-                    ...this.styles.base,
-                    ...this.styles.button,
-                    ...{
-                        color: style
-                    }
-                };
-            }
-        } else if (typeof style == 'object' && style) {
-            myStyle = {
-                ...this.styles.base,
-                ...this.styles.button,
-                ...style
-            };
-        } else {
-            myStyle = {
-                ...this.styles.base,
-                ...this.styles.button
-            };
-        }
+        let myStyle = this.compileStyles(style);
 
         let button = this.pha.add.text(
             x,
@@ -1137,34 +1187,10 @@ class HoytPhaserTools {
 
 
 
-    createText(x, y, text, style) {
+    createText(x, y, text='', style=null) {
         text = this.unToken(text+'');
 
-        let myStyle = null;
-        if (typeof style == 'string') {
-            if (style in this.styles) {
-                myStyle = {
-                    ...this.styles.base,
-                    ...this.styles[style]
-                };
-            } else {
-                myStyle = {
-                    ...this.styles.base,
-                    ...{
-                        color: style
-                    }
-                };
-            }
-        } else if (typeof style == 'object' && style) {
-            myStyle = {
-                ...this.styles.base,
-                ...style
-            };
-        } else {
-            myStyle = {
-                ...this.styles.base,
-            };
-        }
+        let myStyle = this.compileStyles(style);
 
         let myText = this.pha.add.text(
             x,
